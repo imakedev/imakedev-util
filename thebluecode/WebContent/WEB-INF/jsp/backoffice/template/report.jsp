@@ -12,7 +12,7 @@ $(document).ready(function() {
 });
 function exportXLS(){
 	var src = _path+"/export/init?id="+document.getElementById("reportSelect").value;
-	alert(src)
+	//alert(src)
 	
 	var div = document.createElement("div");
     document.body.appendChild(div);

@@ -72,7 +72,8 @@ $(document).ready(function() {
 	$('#tabs > ul > li > a').css("width","70px"); 
 		 
 	//loadDynamicPage("employee/init");
-	togle_page('employeeWorkMapping/init','employee_link');
+	togle_page('cdr/init','cdr_link');
+	_path="${url}";
 });
 function loadDynamicPage(pageId){
 	//alert(pageId)
@@ -225,8 +226,9 @@ function openMailDialog(todo_id,todo_ref){
                  <!--  <a class="brand" href="#">Title</a> -->
                   <div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav"> 
-                      <li id="employee_link"><a onclick="togle_page('employeeWorkMapping/init','employee_link')">Import</a></li>
-                      <li  id="job_link"><a onclick="togle_page('job/init','job_link')">Report</a></li>
+                      <li id="cdr_link"><a onclick="togle_page('cdr/init','cdr_link')">Import CDR</a></li>
+                      <li id="package_link"><a onclick="togle_page('package/init','package_link')">Import Package</a></li>
+                      <li  id="report_link"><a onclick="togle_page('report/init','report_link')">Report</a></li>
                       <!-- <li id="breakdown_link"><a onclick="togle_page('breakdown/init','breakdown_link')">Break down</a></li>
                       <li id="costs_link"><a onclick="togle_page('costs/init','costs_link')">Costs</a></li>
                       <li id="roadpump_link"><a onclick="togle_page('roadpump/init','roadpump_link')">Road pump</a></li>
@@ -274,26 +276,7 @@ function openMailDialog(todo_id,todo_ref){
             </td>
             </tr> 
             </table>
-         </span>
-             	 
-        <!-- /navbar -->
-         <!--  </div>   -->
-         <!--  <span style="float:right;position: relative;top: 30px"> -->
-             		<!-- นาย สมชาย รักงาน <a  href="">Log out</a> -->
-             		
-             		<!-- <div class="btn-group">
-  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    นาย สมชาย รักงาน
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li class="dropdown">ss</li>
-    <li class="dropdown">ssdd</li>
-    dropdown menu links
-  </ul>
- 
-</div> -->
-          <!--  </span> -->
+         </span> 
      	</div>
      </div>
      <div class="row-fluid" style="margin-top: 63px"> 
@@ -302,6 +285,7 @@ function openMailDialog(todo_id,todo_ref){
       	</div>
     </div> 
   </div>  
+   <script src="<c:url value='/resources/js/ajaxupload.js'/>"></script>
 </body>
 </html>
 

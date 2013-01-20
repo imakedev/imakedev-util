@@ -8,10 +8,11 @@ $(document).ready(function() {
 		 $("#message_element").slideDown("slow"); 
 		 setTimeout(function(){$("#message_element").slideUp("slow")},5000);
 	 }
-	changeReport();
+	//changeReport();
 });
 function exportXLS(){
-	var src = _path+"/export/init?id="+document.getElementById("reportSelect").value;
+	//var src = _path+"/export/init?id="+document.getElementById("reportSelect").value;
+	var src= _path+"/export/all";
 	//alert(src)
 	
 	var div = document.createElement("div");
@@ -111,7 +112,7 @@ function doAction(mode,id){
            <!-- <div style="position:relative;right:-94%;">  </div> --> 
            
              
-            <form:form id="reportForm" name="reportForm" modelAttribute="reportForm"  cssClass="well" cssStyle="border:2px solid #B3D2EE;background: #F9F9F9" action="" method="post">
+            <form:form id="reportForm" name="reportForm" modelAttribute="reportForm"  cssClass="well" cssStyle="border:2px solid #B3D2EE;background: #F9F9F9;height;100px" action="" method="post">
           <%--   <form:hidden path="mode"/>
             <form:hidden path="pbdIdArray"/>
              <form:hidden path="pstBreakDown.pbdId" id="pbdId"/>
@@ -128,6 +129,7 @@ function doAction(mode,id){
             <strong>Report</strong>
             </div>
             <div align="center" style="padding: 10px 60px">
+              <%--
             	<span style="font-size: 13px;">Select :</span> 
             	<span style="padding: 20px"> 
             	<select name="reportSelect" id="reportSelect" onchange="changeReport()"  style="width: 100px"> 
@@ -139,10 +141,11 @@ function doAction(mode,id){
             	</select>
             	&nbsp;&nbsp;  
             	</span>  
+             --%>
             	<span  style="padding: 0px 0px 0px 0px;position: absolute;"><a  class="btn btn-primary" onclick="exportXLS()">&nbsp;Export XLS</a>
 				</span>
             </div>
-            <div id="reportElement"></div> 
+            <div id="reportElement">&nbsp;</div> 
 			</form:form> 
 	    					<%-- <table border="0" width="100%" style="font-size: 13px">
 	    					<tbody><tr>

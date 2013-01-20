@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import th.co.aoe.imake.pst.constant.ServiceConstant;
 import th.co.aoe.imake.thebluecode.backoffice.form.CDRImportForm;
+import th.co.aoe.imake.thebluecode.backoffice.service.TheBlueCodeService;
 import th.co.aoe.imake.thebluecode.backoffice.utils.IMakeDevUtils;
 
 @Controller
@@ -21,12 +23,19 @@ import th.co.aoe.imake.thebluecode.backoffice.utils.IMakeDevUtils;
 @SessionAttributes(value={"cdrImportForm"})
 public class CDRImportController {
 
-	/* @Autowired
-	 private PSTService pstService;*/
-	 private static final Logger logger = LoggerFactory.getLogger(ServiceConstant.LOG_APPENDER);
+	 @Autowired
+	 private TheBlueCodeService theBlueCodeService;
+	 
+	/* public CDRImportController(TheBlueCodeService theBlueCodeService) {
+		super();
+		this.theBlueCodeService = theBlueCodeService;
+	}*/
+
+	private static final Logger logger = LoggerFactory.getLogger(ServiceConstant.LOG_APPENDER);
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
 	 public String init(Model model)
 	    {
+		 theBlueCodeService.getTemCallDetailRecord();
 		 CDRImportForm cdrImportForm = null;
 	      /*  if(model.containsAttribute("cdrImportForm"))
 	        	cdrImportForm = (CDRImportForm)model.asMap().get("cdrImportForm");
@@ -93,5 +102,13 @@ public class CDRImportController {
 		        return "backoffice/template/cdr_import";
 	        // return "backoffice/template/break_down_management";
 	    }
+
+	/*public TheBlueCodeService getTheBlueCodeService() {
+		return theBlueCodeService;
+	}
+
+	public void setTheBlueCodeService(TheBlueCodeService theBlueCodeService) {
+		this.theBlueCodeService = theBlueCodeService;
+	}*/
 	  
 }

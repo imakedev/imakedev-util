@@ -54,9 +54,9 @@
 a{cursor: pointer;}
 </style>
 <style type="text/css"> 
-th{ font-family:Tahoma; font-size:12px; font-weight:bold;
+/* th{ font-family:Tahoma; font-size:12px; font-weight:bold;
  color: #fff;background:url(/MISSExamBackOffice/resources/images/tr_back-theme1.gif) repeat-x scroll 0 0 #80838A;padding: 5px 8px;border:1px solid #fff; 
-} 
+}  */
 </style> 
 <c:set var="aoeTest">
   <spring:message code='navigation_home'/>
@@ -214,8 +214,8 @@ function openMailDialog(todo_id,todo_ref){
             <tr><td width="30%" >
             <img src="<c:url value='/resources/images/logo.png'/>" />  
             </td> 
-            <td width="30%" align="left">
-             <div class="navbar" style="float:left;position: relative;top: 8px">
+            <td width="50%" align="left">
+             <div class="navbar" style="float:left;position: relative;top: 8px;width: 500px">
               <div class="navbar-inner">
                 <div class="container">
                  <!--  <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -228,6 +228,7 @@ function openMailDialog(todo_id,todo_ref){
                     <ul class="nav"> 
                       <li id="cdr_link"><a onclick="togle_page('cdr/init','cdr_link')">Import CDR</a></li>
                       <li id="package_link"><a onclick="togle_page('package/init','package_link')">Import Package</a></li>
+                      <li id="group_link"><a onclick="togle_page('group/init','group_link')">Import Group</a></li>
                       <li  id="report_link"><a onclick="togle_page('report/init','report_link')">Report</a></li>
                       <!-- <li id="breakdown_link"><a onclick="togle_page('breakdown/init','breakdown_link')">Break down</a></li>
                       <li id="costs_link"><a onclick="togle_page('costs/init','costs_link')">Costs</a></li>
@@ -268,7 +269,7 @@ function openMailDialog(todo_id,todo_ref){
               </div><!-- /navbar-inner -->
             </div>
             </td>
-             <td width="30%" align="right"><span style="padding: 10px">
+             <td width="10%" align="right"><span style="padding: 10px">
                       <div align="right" style="position: absolute;right:0;top:75; padding-right:10px;">
             			<a href="${logoutUrl}">Logout</a> 
            			 </div> 

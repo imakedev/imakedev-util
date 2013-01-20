@@ -3,51 +3,41 @@
 <script>
 $(document).ready(function() {
 	//renderPageSelect();
-	  
-	    $("button[class='close'] > span").click(function() {
-		//  $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
-		 // alert("x clicked")
-		//   $('fieldset').css("padding-top","36px");
-		/*   $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
-		   $("#message_element").slideUp("slow",function()  {
-			 // $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
-				  $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
-	       }); */ 
-		   $("#message_element").slideUp("slow"); 
+	  $("button[class='close'] > span").click(function() {
+		 // $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
+		//  $('fieldset').css("padding-top","36px");
+		  $("#message_element").slideUp("slow"); 
 	       $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); 
-	       
-       }); 
+   });
 	  if($("#message_element > strong").html().length>0){
-		 $('html, body').animate({ scrollTop: 0 }, 'slow'); 
-		 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
-		 
-		 $("#message_element").slideDown("slow"); 
-		 setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
+			 $('html, body').animate({ scrollTop: 0 }, 'slow'); 
+			 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
+			 
+			 $("#message_element").slideDown("slow"); 
+			 setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
 	 }  
 	  $("#info_element").click(function()  {
-		 // $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
-		  $('#message_info').slideUp("show");
-       });
-	new AjaxUpload('cdr_file', {
-	       action: 'import/cdr/1',
+			 // $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
+			  $('#message_info').slideUp("show");
+	       });
+	new AjaxUpload('group_file', { 
+	       action: 'importGroup',
 			onSubmit : function(file , ext){
 	           // Allow only images. You should add security check on the server-side.
-	             $('#message_info').slideUp("show");
-				if (ext && /^(xls|XLS|xlsx|XLSX)$/.test(ext)){
+				if (ext && /^(xls|XLS)$/.test(ext)){
 					/* Setting data */
-					this.setData({ 
-						'provider_id': $("#provider_id").val()
+					this.setData({
 					});					
 				//$('#contact_photo').attr('src', _path+"resources/images/ui-anim_basic_16x16.gif");
 				//$('#contact_photo').attr('src', _path+"resources/images/loading.gif");
 				} else {					
 					// extension is not allowed
 					alert('Error: only xls are allowed') ;
-					// cancel import
+					// cancel upload
 					return false;				
 				}		
 			},
-			onComplete : function(file, response){
+			onComplete : function(file, response){ 
 				//alert(file+","+response);
 				var obj = jQuery.parseJSON(response);
 				//alert(obj.length)
@@ -73,11 +63,7 @@ $(document).ready(function() {
 					 $('#message_info').slideUp("show");
 					setErrorMessage();
 					$('#message_info').slideDown("show");
-				}
-			 /* 	var path_file='getFileAttached("getfile/template/${seriesForm.missSery.msId}/'+obj.hotlink+'")'; */
-				//$('#cdr_file_attached').attr('onclick',path_file);
-				//$('#cdr_file_attached').html(file);
-				//$('#cdr_file_attached').attr('style','cursor: pointer;');	
+				} 
 			}		
 		});
 });
@@ -178,14 +164,12 @@ function doAction(mode,id){
 		  // alert($("#_content").html());
 		});
 }
-</script> 
-  <%-- <div id="message_element" class="alert alert-${message_class}" style="display: none;padding-top:10px"> --%>
+</script>  
   <div id="message_element" class="alert alert-${message_class}" style="display: none;padding:50 30 10 9"> 
     <!-- <button class="close" data-dismiss="alert"><span style="font-size: 12px">x</span></button> -->
     <button class="close"><span style="font-size: 12px">x</span></button>
     <strong>${message}</strong> 
   </div>
-
 <fieldset style="font-family: sans-serif;padding-top:36px">
 	         
            <!-- <legend  style="font-size: 13px">Criteria</legend> -->
@@ -200,59 +184,19 @@ function doAction(mode,id){
               <form:hidden path="paging.pageSize" id="pageSize"/>
               <form:hidden path="pageCount"/> --%>
             <div align="left">
-            <strong>Import CDR</strong>
-            </div> 
-            <div align="center" style="padding: 10px 60px;border:1px solid #B3D2EE;background: #F9F9F9" >
-            <table style="width: 600px" border="0">
-            	<tr>
-            		<td width="50%">
-            			<span style="font-size: 13px;">Select Provider:</span> 
-            	<span style="padding: 20px">
-            	<select id="provider_id" style="width: 109px;">
-    			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
-    			 </select>
-            	</span> 
-            		</td>
-            		<td width="50%">
-            			<span style="font-size: 13px">Select File :</span> 
-            	<span style="padding: 20px">
-            	<a  class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
-            	</span> 
-            		</td>
-            	</tr>
-            </table>
-            <!-- 	<span style="font-size: 13px;">Select Provider:</span> 
-            	<span style="padding: 20px">
-            	<select id="provider_id" style="width: 109px;">
-    			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
-    			 </select>
-            	</span> 
-            	<span style="font-size: 13px">Select File :</span> 
-            	<span style="padding: 20px">
-            	<a  class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
-            	</span> -->  
+            <strong>Import Group</strong>
             </div>
-        <!--   <span align="center" style="padding: 10px 60px;border:1px solid #B3D2EE;background: #F9F9F9" >
-            	<span style="font-size: 13px;">Select Provider:</span> 
-            	<span style="padding: 20px">
-            	<select id="provider_id" style="width: 109px">
-    			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
-    			 </select>
-            	</span> 
+            <div align="center" style="padding: 10px 60px">
             	<span style="font-size: 13px;">Select File :</span> 
             	<span style="padding: 20px">
-            	<a class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
+            	<a class="btn" id="group_file"><i class="icon-file"></i>&nbsp;<span style="">Upload Group</span></a> 
             	</span>  
-            </span> -->
+	    		<%-- <span style="font-size: 13px;">รายละเอียด</span> 
+            	<span style="padding: 20px">
+            	<form:input path="pstBreakDown.pbdName" cssStyle="height: 30;"/>
+            	 
+            	</span> --%>  
+            </div>
 			</form:form>  
 			  <div id="message_info" align="center" style="padding: 10px 60px;border:2px solid #B3D2EE;background: #F9F9F9;display: none">
 			    <!--  <button type="button" class="close" data-dismiss="alert">&times;</button> -->

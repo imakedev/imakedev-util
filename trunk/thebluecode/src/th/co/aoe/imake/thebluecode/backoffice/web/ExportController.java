@@ -2,11 +2,15 @@ package th.co.aoe.imake.thebluecode.backoffice.web;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -26,19 +30,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import th.co.aoe.imake.pst.constant.ServiceConstant;
 import th.co.aoe.imake.thebluecode.backoffice.dto.ReportTemplate;
+import th.co.aoe.imake.thebluecode.backoffice.form.ReportForm;
 import th.co.aoe.imake.thebluecode.backoffice.service.TheBlueCodeService;
 
 @Controller
 @RequestMapping(value={"/export"})
+@SessionAttributes(value={"reportForm"})
 public class ExportController {
 	 @Autowired
 	 private TheBlueCodeService theBlueCodeService;
 	 private static final Logger logger = LoggerFactory.getLogger(ServiceConstant.LOG_APPENDER);
-	 private static SimpleDateFormat format3 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	 //private static SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	 private static SimpleDateFormat format_billCycle = new SimpleDateFormat("dd_MM_yyyy");
+	 private static DateFormat dFormat = new SimpleDateFormat("hh,mm,ss", new Locale("en","EN"));
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
 	 public void export(HttpServletRequest request, HttpServletResponse response)
 	    {
@@ -252,13 +266,39 @@ public class ExportController {
 	            e.printStackTrace();
 	        }
 	    }
-	 
-	 @RequestMapping(value={"/all"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
-	 public void exportAll(HttpServletRequest request, HttpServletResponse response)
+	 @RequestMapping(value = { "/all2" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+		public  ModelAndView exportAll2(HttpServletRequest request, HttpServletResponse response,@ModelAttribute(value="reportForm") ReportForm reportForm, BindingResult result, Model model)
+		
+		    {
+		//dummy data
+			Map<String,String> revenueData = new HashMap<String,String>();
+			revenueData.put("Jan-2010", "$100,000,000");
+			revenueData.put("Feb-2010", "$110,000,000");
+			revenueData.put("Mar-2010", "$130,000,000");
+			revenueData.put("Apr-2010", "$140,000,000");
+			revenueData.put("May-2010", "$200,000,000");
+		 		return null;//new ModelAndView(new ExcelRevenueReportView(),"revenueData",revenueData);
+		    }
+	
+	 @RequestMapping(value={"/all/{billCycle}/{tcId}"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
+	  public void exportAll(HttpServletRequest request, HttpServletResponse response,@PathVariable String billCycle,@PathVariable Integer tcId)
+	// @RequestMapping(value = { "/all" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+//	public  void exportAll(HttpServletRequest request, HttpServletResponse response,@ModelAttribute(value="reportForm") ReportForm reportForm, BindingResult result, Model model)
+	
 	    {
 	    	
-	    	String id=request.getParameter("id");
-	    	logger.info("id =="+id);
+	    	//String id=request.getParameter("id");d
+	    	//logger.info("id =="+id);
+	    	//System.out.println(billCycle +","+tcId);
+	    	Date billCycleDate= null;
+	    	try {
+	    		billCycleDate=format_billCycle.parse(billCycle);
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	    	//System.out.println(billCycleDate);
+	    //	System.out.println(reportForm.getTgName());
 	    	/*String msId=request.getParameter("mcaSeries");
 	    	//System.out.println("request id ="+mtrIds);
 	    	MissTestResult missTestResult =new MissTestResult();
@@ -294,7 +334,8 @@ public class ExportController {
 		// xxxxxxxxxxx
 
 			 
-			String header[] = {"กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวนเงิน"};
+			//String header[] = {"กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวน นาที","จำนวนเงิน"};
+		    String header[] = {"รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)","กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวน นาที","จำนวนเงิน"};
 			
 			int indexRow = 0;
 			Row row = sheet.createRow(indexRow);
@@ -319,51 +360,58 @@ public class ExportController {
 //			cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm AM/PM"));
 			cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm:ss AM/PM"));
 			
-			CellStyle cellStyleTimeUsed = wb.createCellStyle();
+			/*CellStyle cellStyleTimeUsed = wb.createCellStyle();
 			
 			cellStyleTimeUsed.setDataFormat(dateFormat.getFormat("00:mm:ss")); //h:mm:ss
-			String tgName=null;
-			Integer tcId=null;
-			String msIsdn=null;
-			List<ReportTemplate> ReportTemplates = theBlueCodeService.listReportTemplates(tgName, tcId, msIsdn);
-			 
+*/			
+			//String tgName=null;
+			//Integer tcId=null;
+			//String msIsdn=null;
+			List<ReportTemplate> ReportTemplates = theBlueCodeService.listReportTemplates(tcId,billCycleDate);
+			 //System.out.println("ReportTemplates size="+ReportTemplates.size());
 			for (ReportTemplate template : ReportTemplates) {
 				row = sheet.createRow(indexRow);
 				indexRow++;
 				
 				//ReportTemplate template = (ReportTemplate)list.get(i);
+				Cell cell_ = row.createCell(0);
+				Calendar calendar_bill = new GregorianCalendar(new Locale("th","TH"));
+				calendar_bill.setTime(template.getBillCycle());
+				cell_.setCellValue(calendar_bill); //or template.getBillCycle(); 
+				cell_.setCellStyle(cellStyleDate);
+				//cell_.setCellValue(billCycleDate); //or template.getBillCycle();
 				
-				Cell cell0 = row.createCell(0);
+				Cell cell0 = row.createCell(1);
 				cell0.setCellValue(template.getGroupFrom());
 				
-				Cell cell1 = row.createCell(1);
+				Cell cell1 = row.createCell(2);
 				cell1.setCellValue(template.getCompanyFrom());
 				
-				Cell cell2 = row.createCell(2);
+				Cell cell2 = row.createCell(3);
 				cell2.setCellValue(template.getProviderFrom());
 				
-				Cell cell3 = row.createCell(3);
+				Cell cell3 = row.createCell(4);
 				cell3.setCellValue(template.getMsIsdnFrom());
 				
-				Cell cell4 = row.createCell(4);
+				Cell cell4 = row.createCell(5);
 				cell4.setCellValue(template.getGroupTo());
 				
-				Cell cell5 = row.createCell(5);
+				Cell cell5 = row.createCell(6);
 				cell5.setCellValue(template.getCompanyTo());
 				
-				Cell cell6 = row.createCell(6);
+				Cell cell6 = row.createCell(7);
 				cell6.setCellValue(template.getProviderTo());
 				
-				Cell cell7 = row.createCell(7);
+				Cell cell7 = row.createCell(8);
 				cell7.setCellValue(template.getMsIsdnTo());
 				
-				DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH"));
+				//DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH"));
 				Calendar calendar = new GregorianCalendar(new Locale("th","TH"));
 				calendar.setTime(template.getUsedTime());
 				
 				
 				
-				Cell cell8 = row.createCell(8);
+				Cell cell8 = row.createCell(9);
 			//	cell7.setCellValue(dFormat.format(calendar.getTime()));
 				//HSSFDateUtil.setCalendar(calendar, wholeDays, millisecondsInDay, use1904windowing)
 				cell8.setCellValue(calendar);
@@ -371,11 +419,12 @@ public class ExportController {
 			
 				
 				//dateFormat.g
-				Cell cell9 = row.createCell(9);
-				cell9.setCellValue(calendar);
+				Cell cell9 = row.createCell(10);
+				cell9.setCellFormula("TIME("+dFormat.format(calendar.getTime())+")"); 
+				//cell9.setCellValue(calendar);
 				cell9.setCellStyle(cellStyleTime);
 				//String header[] = {"กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวนเงิน"};
-				Cell cell10 = row.createCell(10);
+				Cell cell10 = row.createCell(11);
 				cell10.setCellValue(template.getCallTo());
 				
 				/*calendar.set(Calendar.HOUR, 12);
@@ -386,7 +435,7 @@ public class ExportController {
 				calendar.set(Calendar.MINUTE, 3);
 				calendar.set(Calendar.SECOND,0);
 				calendar.set(Calendar.MILLISECOND, 0);*/
-				Cell cell11 = row.createCell(11); 
+				Cell cell11 = row.createCell(12); 
 				Double usedCount =template.getUsedCount();
 				 
 				//cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm:ss"));
@@ -398,15 +447,23 @@ public class ExportController {
 		                      cal.get(Calendar.DAY_OF_MONTH) + "/" +
 		                      cellText;*/
 				//cell10.setCellStyle(cellStyleTimeUsed);
-				Cell cell12 = row.createCell(12); 
+				
+				
+				Cell cell12 = row.createCell(13); 
 				//cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm:ss"));
 				if(usedCount!=null)
 					cell12.setCellValue(usedCount);
-				else
+				else{
 					cell12.setCellValue(0);
+					usedCount=0d;
+				}
 				
-				Cell cell13 = row.createCell(13);
-				cell13.setCellValue(template.getPrice());
+				Cell cell13 = row.createCell(14);   
+				//cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm:ss"));
+				cell13.setCellValue(usedCount/60);
+				
+				Cell cell14 = row.createCell(15);
+				cell14.setCellValue(template.getPrice());
 			}
 			
 			   response.setHeader("Content-Type", "application/octet-stream; charset=UTF-8");

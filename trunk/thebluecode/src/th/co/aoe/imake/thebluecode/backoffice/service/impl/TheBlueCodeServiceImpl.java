@@ -4,19 +4,20 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,6 +36,12 @@ import th.co.imake.tem.migratedata.form.GroupTemplate;
 @Service
 @Transactional
 public class TheBlueCodeServiceImpl implements TheBlueCodeService { 
+	//private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	//private static final DateFormat format_normal = new SimpleDateFormat("dd/MM/yyyy");
+	
+	private static final DateFormat dFormat_to = new SimpleDateFormat("dd/MM/yyyy 00:00:00");
+	private static final DateFormat dFormat_end= new SimpleDateFormat("dd/MM/yyyy 23:59:59");
+	private static final DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 //	@Autowired
 	@PersistenceUnit(unitName = "hibernatePersistenceUnit") 
     private EntityManagerFactory entityManager;
@@ -192,6 +199,9 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				temCallDetailRecord.setTcdrSource(0);
 				temCallDetailRecord.setTcdrValue(cdrTemplate.getPrice());
 				temCallDetailRecord.setTcdrCallTo(cdrTemplate.getMsIsdnToLocation());
+				//temCallDetailRecord.setTcdrBillCycle(new Timestamp(cdrTemplate.getBillCycle().getTime()));d
+			//	temCallDetailRecord.setTcdrBillCycle(new Timestamp(billCycleDate.getTime()));
+				temCallDetailRecord.setTcdrBillCycle(new Timestamp(cdrTemplate.getBillCycle().getTime()));
 			//	System.out.println("temCallDetailRecord ="+temCallDetailRecord);
 				em.merge(temCallDetailRecord);
 				/*@Column(name = "TCDR_VALUE")
@@ -379,7 +389,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<ReportTemplate> listReportTemplates(String tgName,Integer tcId,String msIsdn){		
+	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle){		
 		// TODO Auto-generated method stub
 		List<ReportTemplate>  reportTemplates= null;
 		StringBuffer sb=new StringBuffer();
@@ -395,7 +405,8 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				"        tcdr.tcdrUsedTime," +
 				"        tcdr.tcdr_call_to," +
 				"		tcdr.tcdr_used_count," +
-				"        tcdr.tcdr_value " +
+				"        tcdr.tcdr_value, " +
+				"  tcdr.tcdr_bill_cycle " +
 				"		from TEM_CALL_DETAIL_RECORD tcdr left join" +
 				"	(select isdn.msisdn, company.tc_id, company.tc_name," +
 				"     company.tc_group_name,provider.tp_name " +
@@ -410,33 +421,58 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				"    tcdr.tcdr_msisdn_to=t2.msisdn where tcdr.ttid=1 and " +
 				"	tcdr.tcdr_source=0 ");
 		
-		    if(tgName!=null && tgName.trim().length()>0){
+		   /* if(tgName!=null && tgName.trim().length()>0){
 		    	sb.append("   and t1.tc_group_name=:tgName");
-		    }
+		    }*/
 		    if(tcId!=null && tcId.intValue()!=0){
 		    	sb.append("   and t1.tc_id=:tcId");
 		    }
-		    if(msIsdn!=null && msIsdn.trim().length()>0){
-		    	sb.append("   and tcdr.tcdrMsIsdnFrom=:msIsdn");
+		    if(billCycle!=null){
+		    
+		    	//sb.append("   and tcdr.tcdrMsIsdnFrom=:msIsdn");
+		    	//sb.append(" tcdr.tcdr_bill_cycle between STR_TO_DATE('"+billCycleStr+" 00:00:00','/%Y-/%m-\\%d \\%H:\\%i:\\%s') and STR_TO_DATE('"+billCycleStr+" 23:00:00','\\%Y-\\%m-\\%d \\%H:\\%i:\\%s')"); 
+		    	//sb.append(" and tcdr.tcdr_bill_cycle between STR_TO_DATE('"+billCycleStr+" 00:00:00') and STR_TO_DATE('"+billCycleStr+" 23:00:00')");
+		    	sb.append(" and tcdr.tcdr_bill_cycle between :start and :end ");
+		    	 
 		    }
 		    /*and t1.tc_group_name='กลุ่ม C' and  t1.tc_id=3  and tcdr.tcdrMsIsdnFrom='057777777'
 		    		   and t1.tp_name='AIS'*/
 			List list=null;
-			DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("th","TH"));
-			Calendar calendar = new GregorianCalendar(new Locale("th","TH"));
+			/*DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("th","TH"));
+			Calendar calendar = new GregorianCalendar(new Locale("th","TH"));*/
 		 
 	EntityManager em = entityManager.createEntityManager();  
 		    try {
 		    	Query query =em.createNativeQuery(sb.toString());
-		    	if(tgName!=null && tgName.trim().length()>0){
+		    	/*if(tgName!=null && tgName.trim().length()>0){
 		    		query.setParameter("tgName", tgName); 
-			    }
+			    }*/
 			    if(tcId!=null && tcId.intValue()!=0){
 			    	query.setParameter("tcId", tcId.intValue());  
 			    }
-			    if(msIsdn!=null && msIsdn.trim().length()>0){
-			    	query.setParameter("msIsdn", msIsdn);   
+			    if(billCycle!=null){ 
+			    /*	String billCycleStr=format.format(billCycle);
+			    	System.out.println(billCycleStr);*/
+			    	Date date_to=null;
+			    	Date date_end=null; 
+			    	try {
+			    		String ff = dFormat_end.format(billCycle);
+			    		//System.out.println("ff="+ff);
+						date_end=dFormat.parse(ff);
+						 ff = dFormat_to.format(billCycle);
+						 date_to=dFormat.parse(ff);
+					//	System.out.println("d="+date_end);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			    	// System.out.println("billCycle="+billCycle);
+			    	query.setParameter("start",date_to, TemporalType.TIMESTAMP);
+			    	query.setParameter("end",date_end, TemporalType.TIMESTAMP);
 			    }
+			   /* if(msIsdn!=null && msIsdn.trim().length()>0){
+			    	query.setParameter("msIsdn", msIsdn);   
+			    }*/
 		    	list=query.getResultList(); 
 		    	int size=list.size();
 		    	reportTemplates=new ArrayList<ReportTemplate>(size);
@@ -481,7 +517,8 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 						//System.out.println(myFormatter.format(hours)+":"+myFormatter.format(minutes)+":"+myFormatter.format(seconds));
 						reportTemplate.setUsedCountStr(myFormatter.format(hours)+":"+myFormatter.format(minutes)+":"+myFormatter.format(seconds));
 						}
-		    		}
+		    		} 
+		    		reportTemplate.setBillCycle(listObj[12]!=null?(Timestamp)listObj[12]:null);//resultSet.getTimestamp("tcdrUsedTime"));
 		    		reportTemplates.add(reportTemplate);
 				}
 		    }
@@ -493,5 +530,46 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 		}
 	return reportTemplates;
 	 
+	}
+
+
+	@Override
+	public List<String[]> getBillCycle(Integer tcId) {
+		// TODO Auto-generated method stub
+		List<String[]>  billCycles= null;
+		StringBuffer sb=new StringBuffer();
+		
+		sb.append("select     DATE_FORMAT(tcdr.tcdr_bill_cycle,'%d_%m_%Y'),  DATE_FORMAT(tcdr.tcdr_bill_cycle,'%d/%m/%Y'), tcdr.tcdr_bill_cycle " +
+				" from TEM_CALL_DETAIL_RECORD tcdr left join (select isdn.msisdn, company.tc_id, company.tc_name," +
+				"   company.tc_group_name,provider.tp_name  from TEM_MSISDN isdn left join TEM_COMPANY company" +
+				"  on isdn.tc_id=company.tc_id left join TEM_PROVIDER provider  on isdn.tp_id=provider.tp_id) t1 on" +
+				" tcdr.tcdrmsisdnfrom=t1.msisdn  where tcdr.ttid=1 and" +
+				" 	tcdr.tcdr_source=0	and  t1.tc_id="+tcId+" group by  tcdr.tcdr_bill_cycle"); 
+		List list=null;
+		/*DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("th","TH"));
+		Calendar calendar = new GregorianCalendar(new Locale("th","TH"));*/
+	 
+EntityManager em = entityManager.createEntityManager();  
+	    try {
+	    	Query query =em.createNativeQuery(sb.toString());
+	    	 
+	    	list=query.getResultList(); 
+	    	int size=list.size();
+	    	billCycles=new ArrayList<String[]>(size); 
+	    	for (int i = 0; i < size; i++) {
+	    		java.lang.Object[] listObj=(java.lang.Object[])list.get(i);
+	    		String[] results=new String[2];
+	    		results[0]=listObj[0]!=null?(String)listObj[0]:"";
+	    		results[1]=listObj[1]!=null?(String)listObj[1]:""; 
+	    		billCycles.add(results);
+			}
+	    }
+	catch (RuntimeException e) {
+	   e.printStackTrace();
+	}
+	finally {
+	    em.close();
+	}
+	    return billCycles;
 	} 
 }

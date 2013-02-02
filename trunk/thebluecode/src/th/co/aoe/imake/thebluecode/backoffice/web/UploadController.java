@@ -70,9 +70,10 @@ public class UploadController {
 	
 	public static DateFormat dateFormatTrue = new SimpleDateFormat("dd/MM/yy HHmmss", new Locale("th", "TH"));
 	public static DateFormat dateFormatTOT = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", new Locale("th", "TH")); 
-		private static SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
-	private static SimpleDateFormat format2 = new SimpleDateFormat(
-			"dd/MM/yyyy HH:mm:ss");
+		private static SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy", new Locale("th", "TH"));
+		private static SimpleDateFormat format1_en = new SimpleDateFormat("dd/MM/yyyy", new Locale("en", "EN"));
+	private static SimpleDateFormat format_billCycle = new SimpleDateFormat(
+			"dd_MM_yyyy");
 	public static DateFormat dateFormatTrue_ext = new SimpleDateFormat(
 			"HH:mm:ss");
 	public static Pattern date_pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{2} \\d{6} \\w.*");
@@ -385,13 +386,22 @@ public class UploadController {
 		}
 	}
 
-	@RequestMapping(value = { "/import/{module}/{id}" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/importCdr" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
 	@ResponseBody
-	public String doImport(HttpServletRequest request, Model model,
-			@PathVariable String module, @PathVariable String id) {
+	public String doImport(HttpServletRequest request, Model model
+			) {
 		
-		String provider_id=request.getParameter("provider_id");
+		//String provider_id=request.getParameter("provider_id");
+		//String billCycle=request.getParameter("billCycle");
 		//System.out.println("provider_id="+provider_id);
+		/*Date billCycleDate=null;
+		try {
+			billCycleDate=format_billCycle.parse(billCycle);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+	//	System.out.println(billCycleDate);
 		/*String ndPathFileGen = null;
 		ImakeFile missFile = new ImakeFile();
 		String hotLink = "";
@@ -442,7 +452,29 @@ public class UploadController {
 
 					boolean isXLSX = extension.equalsIgnoreCase("xlsx") ? true
 							: false;
-					if(provider_id.equalsIgnoreCase("True")){ 
+					
+					result=reademplate(multipart.getInputStream(), isXLSX);
+					//System.out.println(" size      ="+result.size());
+					if(result!=null && result.size()==2){
+						if(((String)result.get(0)).equals("1")){
+							List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
+							//System.out.println(theBlueCodeService);
+							try{
+							int records=theBlueCodeService.importCDR(xxx);
+							//System.out.println(records);
+							}catch(Exception ex){
+								ex.printStackTrace();
+							}
+							/*System.out.println(" xxx size      ="+xxx.size());
+							System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
+							for (int i = 0; i < xxx.size(); i++) {  
+								CDRTemplate cdrTemplate = (CDRTemplate)xxx.get(i);
+								System.out.println(cdrTemplate.getBillCycle()+" "+cdrTemplate.getMsIsdnFrom()+" to "+cdrTemplate.getMsIsdnTo()
+										+"  date "+cdrTemplate.getUsedDate()+" time "+cdrTemplate.getUsedTime()+" price "+cdrTemplate.getPrice()+" usedCount "+cdrTemplate.getUsedCount());
+							} */
+						}
+					}
+					/*if(provider_id.equalsIgnoreCase("True")){ 
 						result=readTrueTemplate(multipart.getInputStream(), isXLSX);
 						//System.out.println(" size      ="+result.size());
 						if(result!=null && result.size()==2){
@@ -450,18 +482,11 @@ public class UploadController {
 								List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
 								//System.out.println(theBlueCodeService);
 								try{
-								int records=theBlueCodeService.importCDR(xxx);
+								int records=theBlueCodeService.importCDR(xxx,billCycleDate);
 								//System.out.println(records);
 								}catch(Exception ex){
 									ex.printStackTrace();
-								}
-								/*System.out.println(" xxx size      ="+xxx.size());
-								System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
-								for (int i = 0; i < xxx.size(); i++) {  
-									CDRTemplate cdrTemplate = (CDRTemplate)xxx.get(i);
-									System.out.println(" "+cdrTemplate.getMsIsdnFrom()+" to "+cdrTemplate.getMsIsdnTo()
-											+"  date "+cdrTemplate.getUsedDate()+" time "+cdrTemplate.getUsedTime()+" price "+cdrTemplate.getPrice()+" usedCount "+cdrTemplate.getUsedCount());
-								} */
+								} 
 							}
 						}
 						
@@ -474,25 +499,18 @@ public class UploadController {
 								List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
 								//System.out.println(theBlueCodeService);
 								try{
-								int records=theBlueCodeService.importCDR(xxx);
+								int records=theBlueCodeService.importCDR(xxx,billCycleDate);
 								//System.out.println(records);
 								}catch(Exception ex){
 									ex.printStackTrace();
-								}
-						/*System.out.println(" xxx size      ="+xxx.size());
-						System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
-						for (int i = 0; i < xxx.size(); i++) {  
-							CDRTemplate cdrTemplate = (CDRTemplate)xxx.get(i);
-							System.out.println(" "+cdrTemplate.getMsIsdnFrom()+" to "+cdrTemplate.getMsIsdnTo()
-									+"  date "+cdrTemplate.getUsedDate()+" time "+cdrTemplate.getUsedTime()+" price "+cdrTemplate.getPrice()+" usedCount "+cdrTemplate.getUsedCount());
-						} */ 
+								} 
 							}
 						}
 					}else{
 						result=new ArrayList(2);
 						result.add("2");
 						result.add("3");
-					}
+					}*/
 
 				/*	hotLink = current + "" + genToken();
 					ndPathFileGen = hotLink + "." + extension;
@@ -584,9 +602,136 @@ public class UploadController {
 		return gson.toJson(result);
 
 	}
+	private List reademplate(InputStream in, boolean isXLSX) {
+		List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
+		List data = new ArrayList();
+		try {
+		Workbook myWorkBook = null;
+		if (isXLSX) {
+			myWorkBook = new XSSFWorkbook(in);
+		} else {
+			POIFSFileSystem myFileSystem = new POIFSFileSystem(in); 
+			myWorkBook = new HSSFWorkbook(myFileSystem);
+		}
+		Sheet sheet1 = myWorkBook.getSheetAt(0);
+		String provider=sheet1.getSheetName();
+		if(provider.equalsIgnoreCase("TRUE")){
+			int[] types = { 1,0,1, 0, 1, 6, 0 }; 
+			CellReference cellRef = null;
+			int columnIndex = 0;
+			int rowNum = 0;
+			int end_col=7;
+			Cell cell=null; 
+			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
+					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
+			for (Row row : sheet1) {
+				//for (Cell cell : row) {
+				for (int j=0;j<end_col;j++) {
+					cell=row.getCell(j);
+					columnIndex = cell.getColumnIndex();
+					rowNum = row.getRowNum();
+					if (rowNum > 0) {
+						cellRef = new CellReference(rowNum, columnIndex);
+						// check type
+						if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
 
+						} else if (types[columnIndex] == cell.getCellType()) { // ok
+
+						} else { // not ok
+							data.add(cellRef.formatAsString());
+						}
+
+						// check data
+						if (columnIndex == 4) {
+							Matcher matcher = date_pattern.matcher(cell
+									.getRichStringCellValue().getString());
+							boolean isMatches = matcher.matches();
+							if (!isMatches)
+								data.add(cellRef.formatAsString());
+
+						}
+					}
+				}
+			}
+			if(data.size()>0){ //not success
+				list.add("0");
+				list.add(data);
+			}else{ //success
+				list.add("1");
+				list.add(getTrueValue(sheet1));
+			}
+		}else
+			list=null;
+	    }
+		else if(provider.equalsIgnoreCase("TOT")){
+			//int[] types = { 0, 0, 1, 1, 0,0 };
+			int[] types = { 1,0,1 , 0, 1,1, 0,0 }; 
+			 //System.out.println("Cell.CELL_TYPE_NUMERIC"+Cell.CELL_TYPE_NUMERIC);// 0 and date(assume 6)
+			int end_col=8;
+			CellReference cellRef = null;
+			int columnIndex = 0;
+			int rowNum = 0;
+			Cell cell=null; 
+			/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
+			System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
+			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
+					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
+			for (Row row : sheet1) {
+				//for (Cell cell : row) {
+				for (int j=0;j<end_col;j++) {
+					cell =row.getCell(j);
+					columnIndex = cell.getColumnIndex(); 
+					rowNum = row.getRowNum();
+					if (rowNum > 0) {
+						cellRef = new CellReference(rowNum, columnIndex);
+						// check type
+						if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
+
+						}else  
+						if (types[columnIndex] == cell.getCellType()) { // ok
+
+						} else { // not ok
+							data.add(cellRef.formatAsString());
+						}
+
+						// check data
+						if (columnIndex == 4) {
+							Matcher matcher = patternTOT.matcher(cell
+									.getRichStringCellValue().getString());
+							boolean isMatches = matcher.matches();
+							if (!isMatches)
+								data.add(cellRef.formatAsString());
+
+						}
+					}
+				}
+			}
+			if(data.size()>0){ //not success
+				list.add("0");
+				list.add(data);
+			}else{ //success
+				list.add("1");
+				list.add(getTOTValue(sheet1));
+			}
+		}else
+			list=null;
+	}	
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// System.out.println("closeeeeeeeeeeeeeeee");
+			 if (in != null)
+				try { 
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} 
+		return list;
+	}
 	private List readTrueTemplate(InputStream in, boolean isXLSX) {
-		
+		//System.out.println("into readTrueTemplate");
 		List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
 		List data = new ArrayList();
 
@@ -623,13 +768,22 @@ public class UploadController {
 
 			Sheet sheet1 = myWorkBook.getSheetAt(0);
 			// String [] columns={"A","B","C","D","E"};
-			int[] types = { 0, 0, 1, 6, 0 };
+			//int[] types = { 0, 0, 1, 6, 0 };
+			int[] types = { 1,0,1, 0, 1, 6, 0 };
 
 			CellReference cellRef = null;
 			int columnIndex = 0;
 			int rowNum = 0;
-			int end_col=5;
+			int end_col=7;
 			Cell cell=null;
+			/*System.out.println("sheet1.getRow(0).getLastCellNum()="+sheet1.getRow(0).getLastCellNum());
+			System.out.println("sheet1.getRow(0).getLastCellNum() value="+sheet1.getRow(0).getCell(sheet1.getRow(0).getLastCellNum()-1).getStringCellValue());
+			CellReference cellRef_last = new CellReference(0, sheet1.getRow(0).getLastCellNum()-1);
+			System.out.println("cellRef_last.formatAsString()=>"+cellRef_last.formatAsString());*/
+			/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
+			System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
+			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
+					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
 			for (Row row : sheet1) {
 				//for (Cell cell : row) {
 				for (int j=0;j<end_col;j++) {
@@ -648,7 +802,7 @@ public class UploadController {
 						}
 
 						// check data
-						if (columnIndex == 2) {
+						if (columnIndex == 4) {
 							Matcher matcher = date_pattern.matcher(cell
 									.getRichStringCellValue().getString());
 							boolean isMatches = matcher.matches();
@@ -666,17 +820,18 @@ public class UploadController {
 				list.add("1");
 				list.add(getTrueValue(sheet1));
 			}
-
+		}else
+			list=null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (in != null)
+			  if (in != null)
 				try {
 					in.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				} 
 		}
 		/*System.out.println(" in invalid " + inValid.size());
 		for (int i = 0; i < inValid.size(); i++) {
@@ -725,10 +880,33 @@ public class UploadController {
 					if (rowNum > 0) {
 						cell=row.getCell(0);
 						CDRTemplate cdrTemplate = new CDRTemplate();
-						cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
+						//String str=format1_en.format(cell.getDateCellValue());
+						//System.out.println(" Str == "+str);
+						/*try {
+							cdrTemplate.setBillCycle(format1.parse(format1_en.format(cell.getDateCellValue())));
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}*/
+						//cdrTemplate.setBillCycle(cell.getDateCellValue());
+					//	cell=row.getCell(1);
+						cdrTemplate.setMsIsdnFromProvider(cell.getStringCellValue());
+						
 						cell=row.getCell(1);
-						cdrTemplate.setMsIsdnTo("0"+format.format(cell.getNumericCellValue()));
+						cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
+						
 						cell=row.getCell(2);
+						try {
+							cdrTemplate.setBillCycle(format1.parse(cell.getStringCellValue()));
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+						cell=row.getCell(3); 
+						cdrTemplate.setMsIsdnTo("0"+format.format(cell.getNumericCellValue()));
+						
+						cell=row.getCell(4);
 						  //System.out.println(cell.getRichStringCellValue().getString()+" , type="+Cell.CELL_TYPE_STRING);
 			              String[] address=cell.getRichStringCellValue().getString().split(" ");
 			              if(address.length>2){
@@ -753,7 +931,7 @@ public class UploadController {
 			              }
 			              	//System.out.println("To "+toStr.trim());
 			              	
-						cell=row.getCell(3); // 00:04:00 
+						cell=row.getCell(5); // 00:04:00 
 		                  //D457 - Sun Dec 31 00:04:00 ICT 1899 , type= date 0
 		              	String usedCount=dateFormatTrue_ext.format(cell.getDateCellValue());
 		              	Double used = 0.0; 
@@ -765,10 +943,10 @@ public class UploadController {
 						cdrTemplate.setUsedCount(used);
 		              	//System.out.println(aoeStr);
 		              	
-						cell=row.getCell(4); 
+						cell=row.getCell(6); 
 						cdrTemplate.setUsedType("call");
 						cdrTemplate.setPrice(cell.getNumericCellValue());
-						cdrTemplate.setMsIsdnFromProvider("TRUE");
+					//	cdrTemplate.setMsIsdnFromProvider("TRUE");
 						list.add(cdrTemplate);
 			          }
 			}
@@ -779,7 +957,7 @@ public class UploadController {
 			
 			List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
 			List data = new ArrayList();
-			int end_col=6;
+			int end_col=8;
 			try { 
 				Workbook myWorkBook = null;
 				if (isXLSX) {
@@ -790,13 +968,18 @@ public class UploadController {
 				} 
 				Sheet sheet1 = myWorkBook.getSheetAt(0);
 				// String [] columns={"A","B","C","D","E"};
-				int[] types = { 0, 0, 1, 1, 0,0 };
+				//int[] types = { 0, 0, 1, 1, 0,0 };
+				int[] types = { 1,0,1 , 0, 1,1, 0,0 };
+				 //System.out.println("Cell.CELL_TYPE_NUMERIC"+Cell.CELL_TYPE_NUMERIC);// 0 and date(assume 6)
 
 				CellReference cellRef = null;
 				int columnIndex = 0;
 				int rowNum = 0;
-				Cell cell=null;
-				
+				Cell cell=null; 
+				/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
+				System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
+				if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
+						&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
 				for (Row row : sheet1) {
 					//for (Cell cell : row) {
 					for (int j=0;j<end_col;j++) {
@@ -806,14 +989,17 @@ public class UploadController {
 						if (rowNum > 0) {
 							cellRef = new CellReference(rowNum, columnIndex);
 							// check type
-							  if (types[columnIndex] == cell.getCellType()) { // ok
+							if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
+
+							}else  
+							if (types[columnIndex] == cell.getCellType()) { // ok
 
 							} else { // not ok
 								data.add(cellRef.formatAsString());
 							}
 
 							// check data
-							if (columnIndex == 2) {
+							if (columnIndex == 4) {
 								Matcher matcher = patternTOT.matcher(cell
 										.getRichStringCellValue().getString());
 								boolean isMatches = matcher.matches();
@@ -831,6 +1017,9 @@ public class UploadController {
 					list.add("1");
 					list.add(getTOTValue(sheet1));
 				}
+			}else
+				list=null;
+				
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -866,10 +1055,40 @@ public class UploadController {
 						if (rowNum > 0) {
 							cell=row.getCell(0);
 							CDRTemplate cdrTemplate = new CDRTemplate();
-							cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
-							cell=row.getCell(1);
+							
+							cdrTemplate.setMsIsdnFromProvider(cell.getStringCellValue());
+							//format1
+							/*Date usedDate=null;
+							try {
+								usedDate = format1.parse(format1_en.format(cell.getDateCellValue()));
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}*/
+							//String str=format1_en.format(cell.getDateCellValue());
+							//System.out.println(" Str == "+str);
+							/*try {
+								cdrTemplate.setBillCycle(format1.parse(format1_en.format(cell.getDateCellValue())));
+							} catch (ParseException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}*/
+							//cell=row.getCell(0);
+							
+							 cell=row.getCell(1);
+								cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
+								
+								cell=row.getCell(2);
+								try {
+									cdrTemplate.setBillCycle(format1.parse(cell.getStringCellValue()));
+								} catch (ParseException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								 
+							cell=row.getCell(3);
 							cdrTemplate.setMsIsdnTo("0"+format.format(cell.getNumericCellValue()));
-							cell=row.getCell(2);
+							cell=row.getCell(4);
 							  //System.out.println(cell.getRichStringCellValue().getString()+" , type="+Cell.CELL_TYPE_STRING);
 				              String[] address=cell.getRichStringCellValue().getString().split(" ");
 				              if(address.length>2){
@@ -894,17 +1113,17 @@ public class UploadController {
 				              }
 				              	//System.out.println("To "+toStr.trim());
 				              	
-							cell=row.getCell(4); // 00:04:00 
+							cell=row.getCell(6); // 00:04:00 
 			                  //D457 - Sun Dec 31 00:04:00 ICT 1899 , type= date 0
 			              	//String usedCount=dateFormatTrue_ext.format(cell.getDateCellValue());
 			              	Double used = (cell.getNumericCellValue()*60);  
 							cdrTemplate.setUsedCount(used);
 			              	//System.out.println(aoeStr);
 			              	
-							cell=row.getCell(5); 
+							cell=row.getCell(7); 
 							cdrTemplate.setUsedType("call");
 							cdrTemplate.setPrice(cell.getNumericCellValue());
-							cdrTemplate.setMsIsdnFromProvider("TOT");
+							//cdrTemplate.setMsIsdnFromProvider("TOT");
 							list.add(cdrTemplate);
 				          }
 				}
@@ -933,8 +1152,12 @@ public class UploadController {
 					CellReference cellRef = null;
 					int columnIndex = 0;
 					int rowNum = 0;
-					int end_col=3;
+					int end_col=4;
 					Cell cell=null;
+					/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
+					System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
+					if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
+							&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
 					for (Row row : sheet1) {
 						//for (Cell cell : row) {
 						for (int j=0;j<end_col;j++) {
@@ -971,6 +1194,8 @@ public class UploadController {
 						list.add("1");
 						list.add(getGroupValue(sheet1));
 					}
+				}else
+					list=null;
 
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -1,5 +1,6 @@
 package th.co.aoe.imake.thebluecode.backoffice.service;
 
+import java.util.Date;
 import java.util.List;
 
 import th.co.aoe.imake.thebluecode.backoffice.domain.TemCallDetailRecord;
@@ -20,5 +21,7 @@ public interface TheBlueCodeService {
 	public List <TemCompany> getTemCompanyByGroup(String tgName);
 	public List <TemMsIsdn> getTemMsIsdnByCompany(Integer tcId);
 	
-	public List<ReportTemplate> listReportTemplates(String tgName,Integer tcId,String msIsdn);
+	public List<String[]> getBillCycle(Integer tcId);
+	
+	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle);
 }

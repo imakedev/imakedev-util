@@ -1,5 +1,6 @@
 package th.co.aoe.imake.thebluecode.backoffice.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -137,7 +138,12 @@ public class TheBlueCodeServiceImpl_BK implements TheBlueCodeService {
 		return null;
 	}
 	@Override
-	public List<ReportTemplate> listReportTemplates(String tgName,Integer tcId,String msIsdn){
+	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle){
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public List<String[]> getBillCycle(Integer tcId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

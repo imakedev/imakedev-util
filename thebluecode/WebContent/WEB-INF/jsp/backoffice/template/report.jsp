@@ -1,23 +1,149 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ include file="/WEB-INF/jsp/includes.jsp" %>
+<style>
+img[class="ui-datepicker-trigger"]{
+	 cursor: pointer;
+    position: relative;
+    top: -2px;
+    left: 2px;
+} 
+</style>
 <script>
 $(document).ready(function() {
 	//renderPageSelect();
+	
 	if($("#message_element > strong").html().length>0){
 		 $('html, body').animate({ scrollTop: 0 }, 'slow'); 
 		 $("#message_element").slideDown("slow"); 
 		 setTimeout(function(){$("#message_element").slideUp("slow")},5000);
 	 }
+	
+	/*  $("#billCycle" ).datepicker({
+			showOn: "button",
+			buttonImage: _path+"resources/images/calendar.gif",
+			buttonImageOnly: true,
+			dateFormat:"dd/mm/yy" 
+		});  */
+	 listmaster('1');
 	//changeReport();
 });
+function getCompany(){
+	if($("#tgName").val()!='-1'){
+		$.post("report/listCompany",$("#reportForm").serialize(), function(data) {
+			if(data!=null){ 
+				 str="<select name=\"tcId\" id=\"tcId\"  style=\"width: 300px;\">";
+					// alert(data.length)
+					if(data.length>0){
+						for(var i=0;i<data.length;i++){
+							str=str+"<option value=\""+data[i].tcId+"\">"+data[i].tcName+"</option>";
+						}
+					}else{
+						str=str+"<option value=\"-1\">Select Company</option>";
+					}
+					str=str+"</select>"; 
+				//	alert(str)
+					$("#tcIdSelect").html(str);
+					getBillCycle();
+			} 
+		 });
+	};
+}
+function getBillCycle(){
+	if($("#tcId").val()!='-1'){
+		$.post("report/listBillCycle",$("#reportForm").serialize(), function(data) {
+			if(data!=null){ 
+				 str="<select name=\"billCycle\" id=\"billCycle\"  style=\"width: 130px;\">";
+					// alert(data.length)
+					if(data.length>0){
+						for(var i=0;i<data.length;i++){
+							str=str+"<option value=\""+data[i][0]+"\">"+data[i][1]+"</option>";
+						}
+					}else{
+						str=str+"<option value=\"-1\">---</option>";
+					}
+					str=str+"</select>"; 
+				//	alert(str)
+					$("#billCycleSelect").html(str);
+			} 
+		 });
+	};
+}
+function listmaster(type){
+	$.ajax({
+		  type: "get",
+		  url:"report/listmaster?type="+type,
+		  cache: false
+		}).done(function( data ) {
+			if(data!=null){
+				//alert(data[0].tgName)
+				var str="";
+				if(type=='1'){// set Group
+					 str="<select name=\"tgName\" id=\"tgName\"  onchange=\"getCompany()\" style=\"width: 300px;\">";
+					// alert(data.length)
+					if(data.length>0){
+						for(var i=0;i<data.length;i++){
+							str=str+"<option value=\""+data[i].tgName+"\">"+data[i].tgName+"</option>";
+						}
+					}else{
+						str=str+"<option value=\"-1\">Select Group</option>";
+					}
+					str=str+"</select>"; 
+				//	alert(str)
+					$("#tgNameSelect").html(str);
+					getCompany();
+				}
+			}
+		});
+	//}); 
+//}
+	/*  $.post("report/listmaster?type="+type,$("#reportForm").serialize(), function(data) {
+		   alert(data);
+		   // appendContent(data);
+		  // alert($("#_content").html());
+		}); */
+}
 function exportXLS(){
 	//var src = _path+"/export/init?id="+document.getElementById("reportSelect").value;
-	var src= _path+"/export/all";
-	//alert(src)
+	//| $("#tcId").val()=='-1') ||  $("#tgName").val()=='-1'
+	//alert($("#billCycle").val().length);
 	
+	//if($("#billCycle").val().length==0 || $("#tcId").val()=='-1' ||  $("#tgName").val()=='-1'){
+	if($("#billCycle").val()=='-1' || $("#tcId").val()=='-1' ||  $("#tgName").val()=='-1'){
+		$( "#dialog-message" ).dialog({ 
+			modal: true,
+			buttons: {
+				"Ok": function() { 
+					$( this ).dialog( "close" ); 
+					return false;
+				} 
+			 }
+		});
+		return false;
+	} 
+	/*
+	$.post(_path+"/export/all2",$("#reportForm").serialize());//{
+		    //alert(data);
+		   // appendContent(data);
+		   var div = document.createElement("div");
+		    document.body.appendChild(div);
+		    div.innerHTML = "<iframe width='0' height='0' scrolling='no' frameborder='0' src='" + data + "'></iframe>";  
+		  // alert($("#_content").html());
+		//});
+		*/
+	//alert($("#billCycle").val());
+		//return false;
+	//alert($("#tcId").val())
+	//var billCycle=$("#billCycle").val().split("/");
+	//21/01/2013 
+	//@RequestMapping(value={"/all/{billCycle}/{tcId}"}
+	//var src= _path+"/export/all/"+billCycle[0]+"_"+billCycle[1]+"_"+billCycle[2]+"/"+$("#tcId").val();
+	var src= _path+"/export/all/"+$("#billCycle").val()+"/"+$("#tcId").val();
+	//alert(src)
+	 
 	var div = document.createElement("div");
     document.body.appendChild(div);
     div.innerHTML = "<iframe width='0' height='0' scrolling='no' frameborder='0' src='" + src + "'></iframe>";
+    
 }
 function changeReport(){ 
 	var reportSelectValue=$("#reportSelect").val();
@@ -96,100 +222,73 @@ function doAction(mode,id){
 		  // alert(data);
 		    appendContent(data);
 		  // alert($("#_content").html());
-		});
+		} );
 }
 </script>
-<div id="dialog-confirmDelete" title="Delete Breakdown" style="display: none;background: ('images/ui-bg_highlight-soft_75_cccccc_1x100.png') repeat-x scroll 50% 50% rgb(204, 204, 204)">
-	Are you sure you want to delete Breakdown ?
+<div id="dialog-message" title="Message" style="display: none;background: ('images/ui-bg_highlight-soft_75_cccccc_1x100.png') repeat-x scroll 50% 50% rgb(204, 204, 204)">
+	กรุณาเลือก Criteria ให้ครบครับ !!! 
 </div>
   <div id="message_element" class="alert alert-${message_class}" style="display: none;padding:50 30 10 9"> 
     <button class="close" data-dismiss="alert"><span style="font-size: 12px">x</span></button>
     <strong>${message}</strong> 
   </div>
-<fieldset style="font-family: sans-serif;padding-top:36px">
-	         
-           <!-- <legend  style="font-size: 13px">Criteria</legend> -->
-           <!-- <div style="position:relative;right:-94%;">  </div> --> 
-           
-             
+<fieldset style="font-family: sans-serif;padding-top:36px"> 
             <form:form id="reportForm" name="reportForm" modelAttribute="reportForm"  cssClass="well" cssStyle="border:2px solid #B3D2EE;background: #F9F9F9;height;100px" action="" method="post">
-          <%--   <form:hidden path="mode"/>
-            <form:hidden path="pbdIdArray"/>
-             <form:hidden path="pstBreakDown.pbdId" id="pbdId"/>
-             <form:hidden path="paging.pageNo" id="pageNo"/>
-              <form:hidden path="paging.pageSize" id="pageSize"/>
-              <form:hidden path="pageCount"/> --%>
-            <!-- <input id="mode" name="mode" type="hidden" value="">
-            <input id="mcaId" name="missCandidate.mcaId" type="hidden" value="">
-            <input id="mcaIdArray" name="mcaIdArray" type="hidden" value="">
-            <input id="pageNo" name="paging.pageNo" type="hidden" value="1">
-            <input id="pageSize" name="paging.pageSize" type="hidden" value="20"> 
-            <input id="pageCount" name="pageCount" type="hidden" value="8">  -->
+       
             <div align="left">
             <strong>Report</strong>
             </div>
-            <div align="center" style="padding: 10px 60px">
-              <%--
-            	<span style="font-size: 13px;">Select :</span> 
-            	<span style="padding: 20px"> 
-            	<select name="reportSelect" id="reportSelect" onchange="changeReport()"  style="width: 100px"> 
-            		<option value="1">Report 1</option>
-            		<option value="2">Report 2</option>
-            		<option value="3">Report 3</option>
-            		<option value="4">Report 4</option>
-            		<option value="5">Report 5</option>
-            	</select>
+            <table border="0"	style="width:650px;">
+            	<tr valign="top">
+            		<td>
+            			<span style="font-size: 13px;">Group :</span> 
+            			<span style="padding: 20px" id="tgNameSelect"> 
+            			<form:select path="tgName" cssStyle="width: 300px;" > 
+            			</form:select>  
+            			</span>
+            		</td>
+            		<td>  
+            			
+            		</td>
+            		<td> </td>
+            	</tr>
+            	<tr valign="top">
+            		<td>
+            				 <span style="font-size: 13px;">Company :</span> 
+            	<span style="padding: 0px" id="tcIdSelect">   
+            	<form:select path="tcId" cssStyle="width: 300px;" > 
+            	<option value="-1">Select Company</option> 
+            	</form:select>
             	&nbsp;&nbsp;  
             	</span>  
-             --%>
+            		</td>
+            		<td></td>
+            		<td></td>
+            	</tr>
+            	<tr valign="top">
+            		<td>
+            	 <span style="font-size: 13px;">รอบบิล :</span> 
+            	<span style="padding: 16px" id="billCycleSelect">   
+            	<form:select path="billCycle" cssStyle="width: 300px;" > 
+            	<option value="-1">Select รอบบิล</option> 
+            	</form:select>
+            	&nbsp;&nbsp;  
+            	</span>  
+            		</td>
+            		<td></td>
+            		<td></td>
+            	</tr>
+            	<tr valign="top">
+            		<td>
             	<span  style="padding: 0px 0px 0px 0px;position: absolute;"><a  class="btn btn-primary" onclick="exportXLS()">&nbsp;Export XLS</a>
-				</span>
-            </div>
+					</span>
+            		</td>
+            		<td></td>
+            		<td></td>
+            	</tr>
+            	
+            </table> 
             <div id="reportElement">&nbsp;</div> 
-			</form:form> 
-	    					<%-- <table border="0" width="100%" style="font-size: 13px">
-	    					<tbody><tr>
-	    					<td align="left" width="50%">
-	    					
-	    					<!-- <a class="btn btn-primary" onclick="loadDynamicPage('breakdown/new')"><i class="icon-plus-sign icon-white"></i>&nbsp;Create</a>&nbsp; -->
-	    					<!-- <a class="btn btn-danger" onclick="doDeleteItems()"><i class="icon-trash icon-white"></i>&nbsp;Delete</a> -->
-	    					</td>
-	    					<td align="right" width="50%">  
-	    					<a onclick="goPrev()">Prev</a>&nbsp;|&nbsp;
-	    					<span id="pageElement">
-	    					<select name="breakdownPageSelect" id="breakdownPageSelect" onchange="goToPage()" style="width: 50px"><option value="1">1</option></select>
-	    					</span>&nbsp;|&nbsp;<a onclick="goNext()">Next</a>
-	    					<!-- &nbsp;<a class="btn btn-primary" onclick="doSearch('search','0')"><i class="icon-search icon-white"></i>&nbsp;Search</a> -->
-	    					</td>
-	    					</tr>
-	    					</tbody></table>
-		<table class="table table-striped table-bordered table-condensed" border="1" style="font-size: 12px">
-        	<thead>
-          		<tr> 
-            		<th width="10%"><div class="th_class">รหัสรายการ</div></th>
-            		<th width="82%"><div class="th_class">รายละเอียด</div></th> 
-            		<th width="8%"><div class="th_class">Action</div></th> 
-          		</tr>
-        	</thead>
-        	<tbody> 
-        	<c:if test="${not empty pstBreakDowns}"> 
-        	 <c:forEach items="${pstBreakDowns}" var="pstBreakDown" varStatus="loop"> 
-          	<tr> 
-            	<td>${pstBreakDown.pbdUid}</td>
-            	<td>${pstBreakDown.pbdName}</td> 
-            	<td style="text-align: center;"> 
-            	 <i title="Edit" onclick="loadDynamicPage('breakdown/item/${pstBreakDown.pbdId}')" style="cursor: pointer;" class="icon-edit"></i>&nbsp;&nbsp;
-            	 <i title="Delete" onclick="confirmDelete('delete','${pstBreakDown.pbdId}')" style="cursor: pointer;" class="icon-trash"></i>
-            	</td>
-          	</tr> 
-          	</c:forEach>
-          	</c:if>
-          	<c:if test="${empty pstBreakDowns}"> 
-          	<tr>
-          		<td colspan="3" style="text-align: center;">&nbsp;Not Found&nbsp;</td>
-          	</tr>
-          </c:if>
-        	</tbody>
-      </table>  --%>
+			</form:form>  
       
       </fieldset> 

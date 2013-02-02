@@ -1,5 +1,13 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ include file="/WEB-INF/jsp/includes.jsp" %>
+<style>
+img[class="ui-datepicker-trigger"]{
+	 cursor: pointer;
+    position: relative;
+    top: -2px;
+    left: 2px;
+} 
+</style>
 <script>
 $(document).ready(function() {
 	//renderPageSelect();
@@ -28,15 +36,22 @@ $(document).ready(function() {
 		 // $('fieldset').animate({ 'padding-top': '36px' }, 'slow');
 		  $('#message_info').slideUp("show");
        });
-	new AjaxUpload('cdr_file', {
-	       action: 'import/cdr/1',
+	  new AjaxUpload('cdr_file', {
+	       action: 'importCdr',
 			onSubmit : function(file , ext){
 	           // Allow only images. You should add security check on the server-side.
 	             $('#message_info').slideUp("show");
+	             /* if($("#billCycle" ).val().length==0){
+	            	    alert('กรุณาเลือก รอบบิล') ;
+	            		return false;		
+	             } */
+	            /*  alert($("#provider_id").val())
+	             alert(getBillCycle()) */
 				if (ext && /^(xls|XLS|xlsx|XLSX)$/.test(ext)){
 					/* Setting data */
 					this.setData({ 
-						'provider_id': $("#provider_id").val()
+						//'provider_id': $("#provider_id").val(),
+						//'billCycle':getBillCycle()
 					});					
 				//$('#contact_photo').attr('src', _path+"resources/images/ui-anim_basic_16x16.gif");
 				//$('#contact_photo').attr('src', _path+"resources/images/loading.gif");
@@ -51,7 +66,9 @@ $(document).ready(function() {
 				//alert(file+","+response);
 				var obj = jQuery.parseJSON(response);
 				//alert(obj.length)
+				//alert(obj);
 				if(obj!=null && obj.length==2){
+					
 					if(obj[0]=='0'){ // not success 
 						 $('#message_info').slideUp("show");
 						 setMessageInfo(obj[1]);
@@ -80,7 +97,21 @@ $(document).ready(function() {
 				//$('#cdr_file_attached').attr('style','cursor: pointer;');	
 			}		
 		});
+	/*  $("#billCycle" ).datepicker({
+			showOn: "button",
+			buttonImage: _path+"resources/images/calendar.gif",
+			buttonImageOnly: true,
+			dateFormat:"dd/mm/yy" 
+		}); */ 
 });
+function clickImport(){
+	
+}
+function getBillCycle(){
+	var billCycle=$("#billCycle").val().split("/");
+	//alert(billCycle);
+	return billCycle[0]+"_"+ billCycle[1]+"_"+ billCycle[2];
+}
 function setErrorTemplat(){
 	$("#message_info_error").html("not have Template !!! ");
 	$("#message_table_error").html("");
@@ -202,57 +233,43 @@ function doAction(mode,id){
             <div align="left">
             <strong>Import CDR</strong>
             </div> 
-            <div align="center" style="padding: 10px 60px;border:1px solid #B3D2EE;background: #F9F9F9" >
-            <table style="width: 600px" border="0">
-            	<tr>
-            		<td width="50%">
+         <!--    <div align="center" style="padding: 10px 60px;border:1px solid #B3D2EE;background: #F9F9F9" > -->
+            <div align="center" style="padding: 10px 60px;" >
+           <!-- <table style="width: 750px" border="0">
+            	 <tr>
+            	<td width="100%">   -->
+            	 <span style="font-size: 13px">Select File :</span> 
+            	<span style="padding: 20px">
+            	<a  class="btn" id="cdr_file" onclick="clickImport()"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
+            	</span> 
+            		<!-- </td> -->
+            		<!-- <td width="35%">
             			<span style="font-size: 13px;">Select Provider:</span> 
             	<span style="padding: 20px">
             	<select id="provider_id" style="width: 109px;">
+            		<option>TOT</option>
+            		<option>True</option>
+    			  	<option>True Move</option> 
     			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
+    			  	<option>DTAC</option>
     			 </select>
             	</span> 
             		</td>
-            		<td width="50%">
+            		<td width="65%">
+            		<span style="font-size: 13px">รอบบิล :</span>
+            		<span style="padding: 20px">
+            			<input type="text" name="billCycle" id="billCycle" readonly="readonly" style="height: 30px;width: 85px"/>	
+            		</span>
             			<span style="font-size: 13px">Select File :</span> 
             	<span style="padding: 20px">
-            	<a  class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
+            	<a  class="btn" id="cdr_file" onclick="clickImport()"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
             	</span> 
-            		</td>
-            	</tr>
-            </table>
-            <!-- 	<span style="font-size: 13px;">Select Provider:</span> 
-            	<span style="padding: 20px">
-            	<select id="provider_id" style="width: 109px;">
-    			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
-    			 </select>
-            	</span> 
-            	<span style="font-size: 13px">Select File :</span> 
-            	<span style="padding: 20px">
-            	<a  class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
-            	</span> -->  
+            		</td> -->
+            <!-- 	</tr>
+            </table> -->
+            
             </div>
-        <!--   <span align="center" style="padding: 10px 60px;border:1px solid #B3D2EE;background: #F9F9F9" >
-            	<span style="font-size: 13px;">Select Provider:</span> 
-            	<span style="padding: 20px">
-            	<select id="provider_id" style="width: 109px">
-    			  	<option>AIS</option>
-    			  	<option>True</option>
-    			  	<option>True Move</option>
-    			  	<option>TOT</option>
-    			 </select>
-            	</span> 
-            	<span style="font-size: 13px;">Select File :</span> 
-            	<span style="padding: 20px">
-            	<a class="btn" id="cdr_file"><i class="icon-file"></i>&nbsp;<span style="">Upload CDR</span></a> 
-            	</span>  
-            </span> -->
+         
 			</form:form>  
 			  <div id="message_info" align="center" style="padding: 10px 60px;border:2px solid #B3D2EE;background: #F9F9F9;display: none">
 			    <!--  <button type="button" class="close" data-dismiss="alert">&times;</button> -->

@@ -24,7 +24,8 @@ $(document).ready(function() {
 	       action: 'importGroup',
 			onSubmit : function(file , ext){
 	           // Allow only images. You should add security check on the server-side.
-				if (ext && /^(xls|XLS)$/.test(ext)){
+				
+				if (ext && /^(xls|XLS|xlsx|XLSX)$/.test(ext)){
 					/* Setting data */
 					this.setData({
 					});					
@@ -72,7 +73,7 @@ function setErrorTemplat(){
 	$("#message_table_error").html("");
 }
 function setErrorMessage(){
-	$("#message_info_error").html("Import Error !!! \n( ตัวอย่างเช่น เลือก Template กับ Provider ไม่ตรงกัน  , จัดรูปแบบของ Template ไม่ถูกต้อง )");
+	$("#message_info_error").html("Import Error !!! \n( ตัวอย่างเช่น เลือก Template  ผิด  , จัดรูปแบบของ Template ไม่ถูกต้อง )");
 	$("#message_table_error").html("");
 }
 function setMessageInfo(obj){

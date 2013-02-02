@@ -72,7 +72,7 @@ $(document).ready(function() {
 	$('#tabs > ul > li > a').css("width","70px"); 
 		 
 	//loadDynamicPage("employee/init");
-	togle_page('cdr/init','cdr_link');
+	togle_page('group/init','group_link');
 	_path="${url}";
 });
 function loadDynamicPage(pageId){
@@ -226,9 +226,9 @@ function openMailDialog(todo_id,todo_ref){
                  <!--  <a class="brand" href="#">Title</a> -->
                   <div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav"> 
-                      <li id="cdr_link"><a onclick="togle_page('cdr/init','cdr_link')">Import CDR</a></li>
-                      <li id="package_link"><a onclick="togle_page('package/init','package_link')">Import Package</a></li>
                       <li id="group_link"><a onclick="togle_page('group/init','group_link')">Import Group</a></li>
+                      <li id="cdr_link"><a onclick="togle_page('cdr/init','cdr_link')">Import CDR</a></li>
+                      <li id="package_link"><a onclick="togle_page('package/init','package_link')">Import Package</a></li>  
                       <li  id="report_link"><a onclick="togle_page('report/init','report_link')">Report</a></li>
                       <!-- <li id="breakdown_link"><a onclick="togle_page('breakdown/init','breakdown_link')">Break down</a></li>
                       <li id="costs_link"><a onclick="togle_page('costs/init','costs_link')">Costs</a></li>

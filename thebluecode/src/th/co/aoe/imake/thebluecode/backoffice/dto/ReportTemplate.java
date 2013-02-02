@@ -28,6 +28,7 @@ public class ReportTemplate implements Serializable {
 	private Double usedCount;
 	private String usedCountStr;
 	private Double price;
+	private Timestamp billCycle;
 
 	public String getGroupFrom() {
 		return groupFrom;
@@ -123,6 +124,14 @@ public class ReportTemplate implements Serializable {
 
 	public void setUsedCountStr(String usedCountStr) {
 		this.usedCountStr = usedCountStr;
+	}
+
+	public Timestamp getBillCycle() {
+		return billCycle;
+	}
+
+	public void setBillCycle(Timestamp billCycle) {
+		this.billCycle = billCycle;
 	}
 
 }

@@ -410,6 +410,7 @@ public class UploadController {
 		String ndFilePath = "";*/
 		String s = "";
 		List result=null;
+		List resultAll=null;
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		MultipartFile multipart = multipartRequest.getFile("userfile");
 		if (multipart != null) {
@@ -452,7 +453,8 @@ public class UploadController {
 
 					boolean isXLSX = extension.equalsIgnoreCase("xlsx") ? true
 							: false;
-					
+					resultAll=new ArrayList(2);
+					int[] records=null;
 					result=reademplate(multipart.getInputStream(), isXLSX);
 					//System.out.println(" size      ="+result.size());
 					if(result!=null && result.size()==2){
@@ -460,7 +462,8 @@ public class UploadController {
 							List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
 							//System.out.println(theBlueCodeService);
 							try{
-							int records=theBlueCodeService.importCDR(xxx);
+								records=theBlueCodeService.importCDR(xxx);
+							 
 							//System.out.println(records);
 							}catch(Exception ex){
 								ex.printStackTrace();
@@ -473,6 +476,8 @@ public class UploadController {
 										+"  date "+cdrTemplate.getUsedDate()+" time "+cdrTemplate.getUsedTime()+" price "+cdrTemplate.getPrice()+" usedCount "+cdrTemplate.getUsedCount());
 							} */
 						}
+						 resultAll.add(result);
+						 resultAll.add(records);
 					}
 					/*if(provider_id.equalsIgnoreCase("True")){ 
 						result=readTrueTemplate(multipart.getInputStream(), isXLSX);
@@ -599,7 +604,7 @@ public class UploadController {
 		Gson gson = new Gson();
 		/*gson.toJson(missFile);*/
 		// return hotLink;
-		return gson.toJson(result);
+		return gson.toJson(resultAll);
 
 	}
 	private List reademplate(InputStream in, boolean isXLSX) {
@@ -638,7 +643,10 @@ public class UploadController {
 						} else if (types[columnIndex] == cell.getCellType()) { // ok
 
 						} else { // not ok
-							data.add(cellRef.formatAsString());
+							String[] values=new String[2];
+							values[0]=cellRef.formatAsString();
+							values[1]="Invalid Type of Cell";
+							data.add(values);
 						}
 
 						// check data
@@ -646,8 +654,12 @@ public class UploadController {
 							Matcher matcher = date_pattern.matcher(cell
 									.getRichStringCellValue().getString());
 							boolean isMatches = matcher.matches();
-							if (!isMatches)
-								data.add(cellRef.formatAsString());
+							if (!isMatches){
+								String[] values=new String[2];
+								values[0]=cellRef.formatAsString();
+								values[1]="Invalid format , sample is [10:12:45 08/08/2555 Bangkok]";
+								data.add(values);
+							} 
 
 						}
 					}
@@ -691,7 +703,10 @@ public class UploadController {
 						if (types[columnIndex] == cell.getCellType()) { // ok
 
 						} else { // not ok
-							data.add(cellRef.formatAsString());
+							String[] values=new String[2];
+							values[0]=cellRef.formatAsString();
+							values[1]="Invalid Type of Cell";
+							data.add(values);
 						}
 
 						// check data
@@ -699,8 +714,13 @@ public class UploadController {
 							Matcher matcher = patternTOT.matcher(cell
 									.getRichStringCellValue().getString());
 							boolean isMatches = matcher.matches();
-							if (!isMatches)
-								data.add(cellRef.formatAsString());
+							if (!isMatches){
+								String[] values=new String[2];
+								values[0]=cellRef.formatAsString();
+								values[1]="Invalid format , sample is [10:12:45 08/08/2555 Bangkok]";
+								data.add(values);
+								//data.add(cellRef.formatAsString());
+							}
 
 						}
 					}
@@ -798,7 +818,10 @@ public class UploadController {
 						} else if (types[columnIndex] == cell.getCellType()) { // ok
 
 						} else { // not ok
-							data.add(cellRef.formatAsString());
+							String[] values=new String[2];
+							values[0]=cellRef.formatAsString();
+							values[1]="Invalid Type of Cell";
+							data.add(values);
 						}
 
 						// check data
@@ -806,8 +829,12 @@ public class UploadController {
 							Matcher matcher = date_pattern.matcher(cell
 									.getRichStringCellValue().getString());
 							boolean isMatches = matcher.matches();
-							if (!isMatches)
-								data.add(cellRef.formatAsString());
+							if (!isMatches){
+								String[] values=new String[2];
+							values[0]=cellRef.formatAsString();
+							values[1]="Invalid format , sample is [10:12:45 08/08/2555 Bangkok]";
+							data.add(values);
+							}
 
 						}
 					}
@@ -1226,6 +1253,8 @@ public class UploadController {
 				String ndFilePath = "";*/
 				String s = "";
 				List result=null;
+				int[] records=null;
+				List resultAll=null;
 				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 				MultipartFile multipart = multipartRequest.getFile("userfile");
 				if (multipart != null) {
@@ -1269,6 +1298,7 @@ public class UploadController {
 							boolean isXLSX = extension.equalsIgnoreCase("xlsx") ? true
 									: false; 
 						result=readGroupTemplate(multipart.getInputStream(), isXLSX);
+						resultAll=new ArrayList(2);
 								//System.out.println(" size      ="+result.size());
 								if(result!=null && result.size()==2){
 									if(((String)result.get(0)).equals("1")){
@@ -1282,12 +1312,16 @@ public class UploadController {
 										} */
 										//System.out.println(theBlueCodeService);
 										try{
-										int records=theBlueCodeService.importGroup(xxx);
+										 records=theBlueCodeService.importGroup(xxx);
+										
 										//System.out.println(records);
 										}catch(Exception ex){
 											ex.printStackTrace();
 										}
 									}
+									 
+									 resultAll.add(result);
+									 resultAll.add(records);
 								}
 								
 						 
@@ -1379,7 +1413,7 @@ public class UploadController {
 				Gson gson = new Gson();
 				/*gson.toJson(missFile);*/
 				// return hotLink;
-				return gson.toJson(result);
+				return gson.toJson(resultAll);
 
 			}
 	private void createDirectoryIfNeeded(String directoryName) {

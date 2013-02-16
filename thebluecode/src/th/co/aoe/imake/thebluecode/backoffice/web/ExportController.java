@@ -280,8 +280,9 @@ public class ExportController {
 		 		return null;//new ModelAndView(new ExcelRevenueReportView(),"revenueData",revenueData);
 		    }
 	
-	 @RequestMapping(value={"/all/{billCycle}/{tcId}"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
-	  public void exportAll(HttpServletRequest request, HttpServletResponse response,@PathVariable String billCycle,@PathVariable Integer tcId)
+	 @RequestMapping(value={"/all/{billCycle}/{tcId}/{provider}"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
+	  public void exportAll(HttpServletRequest request, HttpServletResponse response,@PathVariable String billCycle,@PathVariable Integer tcId,
+			  @PathVariable Integer provider)
 	// @RequestMapping(value = { "/all" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
 //	public  void exportAll(HttpServletRequest request, HttpServletResponse response,@ModelAttribute(value="reportForm") ReportForm reportForm, BindingResult result, Model model)
 	
@@ -367,7 +368,7 @@ public class ExportController {
 			//String tgName=null;
 			//Integer tcId=null;
 			//String msIsdn=null;
-			List<ReportTemplate> ReportTemplates = theBlueCodeService.listReportTemplates(tcId,billCycleDate);
+			List<ReportTemplate> ReportTemplates = theBlueCodeService.listReportTemplates(tcId,billCycleDate, provider);
 			 //System.out.println("ReportTemplates size="+ReportTemplates.size());
 			for (ReportTemplate template : ReportTemplates) {
 				row = sheet.createRow(indexRow);

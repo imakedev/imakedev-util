@@ -78,7 +78,12 @@ public class ReportController {
 		// return hotLink;
 		//return str;
 	 }
-	 
+	 @RequestMapping(value = { "/listProvider" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+		public  @ResponseBody List listProvider(HttpServletRequest request, @ModelAttribute(value="reportForm") ReportForm reportForm, BindingResult result, Model model
+				) {
+	//	System.out.println("xx="+reportForm.getBillCycle());
+		return  theBlueCodeService.listProvider(reportForm.getTcId(),null);
+	 }
 	 @RequestMapping(value = { "/listmaster" }, method = { org.springframework.web.bind.annotation.RequestMethod.GET })
 	 public  @ResponseBody List listmaster(Model model,HttpServletRequest request)
 	    {

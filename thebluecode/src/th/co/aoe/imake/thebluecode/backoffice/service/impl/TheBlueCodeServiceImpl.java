@@ -650,15 +650,34 @@ EntityManager em = entityManager.createEntityManager();
 				"   company.tc_group_name,provider.tp_id,provider.tp_name  from TEM_MSISDN isdn left join TEM_COMPANY company" +
 				"  on isdn.tc_id=company.tc_id left join TEM_PROVIDER provider  on isdn.tp_id=provider.tp_id) t1 on" +
 				" tcdr.tcdrmsisdnfrom=t1.msisdn  where tcdr.ttid=1 and" +
-				" 	tcdr.tcdr_source=0	and  t1.tc_id="+tcId+" group by   t1.tp_name"); 
+				" 	tcdr.tcdr_source=0	and  t1.tc_id="+tcId+" " );
+						
+		if(billCycle!=null){
+						    	sb.append(" and tcdr.tcdr_bill_cycle between :start and :end ");
+		  }
+		sb.append("group by   t1.tp_name"); 
 		List list=null;
 		/*DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("th","TH"));
 		Calendar calendar = new GregorianCalendar(new Locale("th","TH"));*/
-	 
+	
 EntityManager em = entityManager.createEntityManager();  
 	    try {
 	    	Query query =em.createNativeQuery(sb.toString());
-	    	 
+	    	 if(billCycle!=null){ 
+				    	Date date_to=null;
+				    	Date date_end=null; 
+				    	try {
+				    		String ff = dFormat_end.format(billCycle);
+							date_end=dFormat.parse(ff);
+							 ff = dFormat_to.format(billCycle);
+							 date_to=dFormat.parse(ff);
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    	query.setParameter("start",date_to, TemporalType.TIMESTAMP);
+				    	query.setParameter("end",date_end, TemporalType.TIMESTAMP);
+				    }
 	    	list=query.getResultList(); 
 	    	int size=list.size();
 	    	providers=new ArrayList<String[]>(size); 

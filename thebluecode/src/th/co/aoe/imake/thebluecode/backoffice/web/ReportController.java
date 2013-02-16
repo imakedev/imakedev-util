@@ -1,5 +1,8 @@
 package th.co.aoe.imake.thebluecode.backoffice.web;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +27,7 @@ import th.co.aoe.imake.thebluecode.backoffice.utils.IMakeDevUtils;
 public class ReportController {
 	 @Autowired
 	 private TheBlueCodeService theBlueCodeService;
-	 
+	 private static SimpleDateFormat format_billCycle = new SimpleDateFormat("dd_MM_yyyy");
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
 	 public String eptNormReport(Model model)
 	    {
@@ -81,8 +84,15 @@ public class ReportController {
 	 @RequestMapping(value = { "/listProvider" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
 		public  @ResponseBody List listProvider(HttpServletRequest request, @ModelAttribute(value="reportForm") ReportForm reportForm, BindingResult result, Model model
 				) {
-	//	System.out.println("xx="+reportForm.getBillCycle());
-		return  theBlueCodeService.listProvider(reportForm.getTcId(),null);
+		//System.out.println("xx="+reportForm.getBillCycle());
+		Date billCycleDate= null;
+    	try {
+    		billCycleDate=format_billCycle.parse(reportForm.getBillCycle());
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return  theBlueCodeService.listProvider(reportForm.getTcId(),billCycleDate);
 	 }
 	 @RequestMapping(value = { "/listmaster" }, method = { org.springframework.web.bind.annotation.RequestMethod.GET })
 	 public  @ResponseBody List listmaster(Model model,HttpServletRequest request)

@@ -24,7 +24,7 @@ public class Main {
 
 		//((Component) springContext.getBean("top")).start();
 		TheBlueCodeService temService = (TheBlueCodeService)springContext.getBean("theBlueCodeService");
-		List list=temService.listReportTemplates(3, new Date());
+		List list=temService.listReportTemplates(3, new Date(),1);
 		System.out.println(list);
 		// *and t1.tc_group_name='กลุ่ม C' and  t1.tc_id=3  and tcdr.tcdrMsIsdnFrom='057777777'
 		 //  and t1.tp_name='AIS'*/

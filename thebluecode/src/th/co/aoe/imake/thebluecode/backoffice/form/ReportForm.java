@@ -11,6 +11,7 @@ public class ReportForm  extends CommonForm implements Serializable {
 	private  String tgName;
 	private Integer tcId;
 	private String billCycle;
+	private String provider;
 	public String getTgName() {
 		return tgName;
 	}
@@ -28,6 +29,12 @@ public class ReportForm  extends CommonForm implements Serializable {
 	}
 	public void setBillCycle(String billCycle) {
 		this.billCycle = billCycle;
+	}
+	public String getProvider() {
+		return provider;
+	}
+	public void setProvider(String provider) {
+		this.provider = provider;
 	} 
 	
 }

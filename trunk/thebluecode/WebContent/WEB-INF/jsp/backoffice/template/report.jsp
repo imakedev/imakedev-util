@@ -31,7 +31,7 @@ function getCompany(){
 	if($("#tgName").val()!='-1'){
 		$.post("report/listCompany",$("#reportForm").serialize(), function(data) {
 			if(data!=null){ 
-				 str="<select name=\"tcId\" id=\"tcId\"  style=\"width: 300px;\">";
+				 str="<select name=\"tcId\" id=\"tcId\"  onchange=\"getBillCycle()\" style=\"width: 300px;\">";
 					// alert(data.length)
 					if(data.length>0){
 						for(var i=0;i<data.length;i++){
@@ -52,7 +52,7 @@ function getBillCycle(){
 	if($("#tcId").val()!='-1'){
 		$.post("report/listBillCycle",$("#reportForm").serialize(), function(data) {
 			if(data!=null){ 
-				 str="<select name=\"billCycle\" id=\"billCycle\"  style=\"width: 130px;\">";
+				 str="<select name=\"billCycle\" id=\"billCycle\" onchange=\"getProvider()\" style=\"width: 130px;\">";
 					// alert(data.length)
 					if(data.length>0){
 						for(var i=0;i<data.length;i++){
@@ -64,6 +64,31 @@ function getBillCycle(){
 					str=str+"</select>"; 
 				//	alert(str)
 					$("#billCycleSelect").html(str);
+					getProvider();
+			} 
+		 });
+	};
+}
+function getProvider(){
+	if($("#tcId").val()!='-1'){
+		$.post("report/listProvider",$("#reportForm").serialize(), function(data) {
+			if(data!=null){ 
+				 str="<select name=\"provider\" id=\"provider\"  style=\"width: 130px;\">";
+					// alert(data.length)
+						
+					if(data.length>0){
+						str=str+"<option value=\"0\">All</option>";
+						for(var i=0;i<data.length;i++){
+							str=str+"<option value=\""+data[i][0]+"\">"+data[i][1]+"</option>";
+							//alert(data[i][1]);;
+						}
+					}else{
+						str=str+"<option value=\"-1\">---</option>";
+					} 
+					str=str+"</select>"; 
+				//	alert(str)
+					$("#providerSelect").html(str);
+					//getProvider();
 			} 
 		 });
 	};
@@ -137,7 +162,7 @@ function exportXLS(){
 	//21/01/2013 
 	//@RequestMapping(value={"/all/{billCycle}/{tcId}"}
 	//var src= _path+"/export/all/"+billCycle[0]+"_"+billCycle[1]+"_"+billCycle[2]+"/"+$("#tcId").val();
-	var src= _path+"/export/all/"+$("#billCycle").val()+"/"+$("#tcId").val();
+	var src= _path+"/export/all/"+$("#billCycle").val()+"/"+$("#tcId").val()+"/"+$("#provider").val();
 	//alert(src)
 	 
 	var div = document.createElement("div");
@@ -271,6 +296,19 @@ function doAction(mode,id){
             	<span style="padding: 16px" id="billCycleSelect">   
             	<form:select path="billCycle" cssStyle="width: 300px;" > 
             	<option value="-1">Select รอบบิล</option> 
+            	</form:select>
+            	&nbsp;&nbsp;  
+            	</span>  
+            		</td>
+            		<td></td>
+            		<td></td>
+            	</tr>
+            	<tr valign="top">
+            		<td>
+            	 <span style="font-size: 13px;">Provider :</span> 
+            	<span style="padding: 10px" id="providerSelect">   
+            	<form:select path="provider" cssStyle="width: 140px;" > 
+            	<option value="-1">Select Provider</option> 
             	</form:select>
             	&nbsp;&nbsp;  
             	</span>  

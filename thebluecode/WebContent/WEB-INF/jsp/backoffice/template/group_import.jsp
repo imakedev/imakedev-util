@@ -40,17 +40,21 @@ $(document).ready(function() {
 			},
 			onComplete : function(file, response){ 
 				//alert(file+","+response);
-				var obj = jQuery.parseJSON(response);
+				var objAll = jQuery.parseJSON(response);
 				//alert(obj.length)
-				if(obj!=null && obj.length==2){
+				if(objAll!=null && objAll.length==2){
+					var obj=objAll[0];
+					var obj_number=objAll[1];
+					//alert(obj_number)
 					if(obj[0]=='0'){ // not success 
 						 $('#message_info').slideUp("show");
 						 setMessageInfo(obj[1]);
 						 $('#message_info').slideDown("show");
 					}else if(obj[0]=='1'){ // success
 						 $("#message_element").attr("class","alert alert-success"); 
-						 
-						 $("#message_element > strong").html("Import success "+obj[1].length+" "+((obj[1].length>1)?"records":"record")+" !!! ");  
+						// 1,200 is successfully imported with 300 new records 900 updated records
+						// $("#message_element > strong").html("Import success "+obj[1].length+" "+((obj[1].length>1)?"records":"record")+" !!! ");  
+						 $("#message_element > strong").html(obj[1].length+" is successfully imported  with "+obj_number[0]+" new "+((obj_number[0]>1)?"records":"record")+" ,  "+obj_number[1]+" updated "+((obj_number[1]>1)?"records":"record")+"");
 						 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
 					    $("#message_element").slideDown("slow"); 
 					    setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);

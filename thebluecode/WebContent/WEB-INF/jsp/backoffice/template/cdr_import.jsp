@@ -64,19 +64,21 @@ $(document).ready(function() {
 			},
 			onComplete : function(file, response){
 				//alert(file+","+response);
-				var obj = jQuery.parseJSON(response);
+				var objAll = jQuery.parseJSON(response);
 				//alert(obj.length)
-				//alert(obj);
-				if(obj!=null && obj.length==2){
-					
+				//alert(objAll);
+				if(objAll!=null && objAll.length==2){
+					var obj=objAll[0];
+					var obj_number=objAll[1];
+				 
 					if(obj[0]=='0'){ // not success 
 						 $('#message_info').slideUp("show");
 						 setMessageInfo(obj[1]);
 						 $('#message_info').slideDown("show");
 					}else if(obj[0]=='1'){ // success
 						 $("#message_element").attr("class","alert alert-success"); 
-						 
-						 $("#message_element > strong").html("Import success "+obj[1].length+" "+((obj[1].length>1)?"records":"record")+" !!! ");  
+						 $("#message_element > strong").html(obj[1].length+" is successfully imported  with "+obj_number[0]+" new "+((obj_number[0]>1)?"records":"record")+" ,  "+obj_number[1]+" updated "+((obj_number[1]>1)?"records":"record")+"");
+						// $("#message_element > strong").html("Import success "+obj[1].length+" "+((obj[1].length>1)?"records":"record")+" !!! ");  
 						 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
 					    $("#message_element").slideDown("slow"); 
 					    setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
@@ -126,7 +128,8 @@ function setMessageInfo(obj){
 			"<thead>"+ 
 			"<tr> "+ 
 			"<th width=\"10%\"><div class=\"th_class\">#</div></th>"+ 
-			"<th width=\"90%\"><div class=\"th_class\">Cell</div></th> "+ 
+			"<th width=\"10%\"><div class=\"th_class\">Cell</div></th> "+ 
+			"<th width=\"80%\"><div class=\"th_class\">Desc</div></th> "+ 
 			"</tr>"+ 
 			"</thead>"+ 
 			"<tbody>   "; 
@@ -134,7 +137,8 @@ function setMessageInfo(obj){
 	for(var i=0;i<obj.length;i++){
 		str=str+"<tr>"+ 
 				"<td style=\"text-align: right;\">"+(i+1)+"</td>"+ 
-				"<td>"+obj[i]+"</td> "+ 
+				"<td>"+obj[i][0]+"</td> "+ 
+				"<td>"+obj[i][1]+"</td> "+ 
 				"</tr>";
 	}
 	str=str+"</tbody>"+

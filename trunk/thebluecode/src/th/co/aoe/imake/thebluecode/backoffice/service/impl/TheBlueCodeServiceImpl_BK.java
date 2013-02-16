@@ -113,14 +113,14 @@ public class TheBlueCodeServiceImpl_BK implements TheBlueCodeService {
 		 */
 	}
 	@Override
-	public int importCDR(List<CDRTemplate> temCallDetailRecords) {
+	public int[] importCDR(List<CDRTemplate> temCallDetailRecords) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 	@Override
-	public int importGroup(List<GroupTemplate> temGroups) {
+	public int[] importGroup(List<GroupTemplate> temGroups) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 	@Override
 	public List<TemGroup> getGroup() {
@@ -138,12 +138,17 @@ public class TheBlueCodeServiceImpl_BK implements TheBlueCodeService {
 		return null;
 	}
 	@Override
-	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle){
+	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle,Integer provider){
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public List<String[]> getBillCycle(Integer tcId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public List<String[]> listProvider(Integer tcId, Date billCycle) {
 		// TODO Auto-generated method stub
 		return null;
 	}

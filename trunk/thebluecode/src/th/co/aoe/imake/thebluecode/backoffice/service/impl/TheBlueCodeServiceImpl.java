@@ -102,11 +102,14 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor={RuntimeException.class})
-	public int importCDR(List<CDRTemplate> temCallDetailRecords) {
+	public int[] importCDR(List<CDRTemplate> temCallDetailRecords) {
 		// TODO Auto-generated method stub
 		 EntityManager em = entityManager.createEntityManager(); 
 		 EntityTransaction tx=em.getTransaction();
+		 int[] results=new int[2];
 		 int i=0;
+		 int newRecord=0;
+		 int updateRecord=0;
 		 TemProvider provider_true=new TemProvider(1,"TRUE");
 		 TemProvider provider_dtac=new TemProvider(2,"DTAC");
 		 TemProvider provider_ais=new TemProvider(1,"AIS");
@@ -203,6 +206,22 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 			//	temCallDetailRecord.setTcdrBillCycle(new Timestamp(billCycleDate.getTime()));
 				temCallDetailRecord.setTcdrBillCycle(new Timestamp(cdrTemplate.getBillCycle().getTime()));
 			//	System.out.println("temCallDetailRecord ="+temCallDetailRecord);
+				
+				Query query =em.createQuery("select count(temCallDetailRecord) from TemCallDetailRecord temCallDetailRecord" +
+						" where temCallDetailRecord.temCallDetailRecordPk.tcdrMsIsdnFrom=:tcdrMsIsdnFrom" +
+						" and   temCallDetailRecord.temCallDetailRecordPk.tcdrUsedTime=:tcdrUsedTime" +
+						" and   temCallDetailRecord.temCallDetailRecordPk.ttId=:ttId");
+					 
+		 		query.setParameter("tcdrMsIsdnFrom", cdrTemplate.getMsIsdnFrom());
+		 		query.setParameter("tcdrUsedTime", timestamp); 
+		 		query.setParameter("ttId", temCallDetailRecordPk.getTtId()); 
+		    	Long count=(Long)query.getSingleResult(); 
+		    	if(count.intValue()>0)
+		    		updateRecord++;
+		    	else
+		    		newRecord++;
+		    	
+		    	 
 				em.merge(temCallDetailRecord);
 				/*@Column(name = "TCDR_VALUE")
 				private Double tcdrValue;*/
@@ -235,35 +254,50 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				tx.commit();
 			    em.close();
 		} 
-		return i;
+	 results[0]=newRecord;
+	 results[1]=updateRecord;
+		return results;
 	}
 
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor={RuntimeException.class})
-	public int importGroup(List<GroupTemplate> temGroups) {
+	public int[] importGroup(List<GroupTemplate> temGroups) {
 		// TODO Auto-generated method stub
 		 EntityManager em = entityManager.createEntityManager(); 
 		 EntityTransaction tx=em.getTransaction();
+		 int[] results=new int[2];
 		//System.out.println(tx);
 		 int i=0;
+		 int newRecord=0;
+		 int updateRecord=0;
+		 boolean isNew=false;
 	 try{
 		 tx.begin();
 		  
 		 	for (GroupTemplate groupTemplate : temGroups) {
+		 		 isNew=false;
+		 		Query query =em.createQuery("select temGroup from TemGroup temGroup where temGroup.tgName=:tgName ");
+		 		query.setParameter("tgName", groupTemplate.getGroup());
+		 		List obj=query.getResultList(); 
+		    	if(obj.size()==0){
+		    		isNew=true;
+		    	}
 		 		TemGroup temGroup =new TemGroup();
 		 		temGroup.setTgName(groupTemplate.getGroup());
 		 		em.merge(temGroup);
-		 		Query query =em.createQuery("select temCompany from TemCompany temCompany where temCompany.tcName=:tcName " +
+		 		  query =em.createQuery("select temCompany from TemCompany temCompany where temCompany.tcName=:tcName " +
 		 				"and temCompany.tgName=:tgName");
 		 		query.setParameter("tcName", groupTemplate.getCompany());
 		 		query.setParameter("tgName", groupTemplate.getGroup());
-		    	List obj=query.getResultList(); 
+		    	 obj=query.getResultList(); 
 		    	if(obj.size()==0){
 		    		TemCompany temCompany =new TemCompany();
 			 		temCompany.setTcName(groupTemplate.getCompany());
 			 		temCompany.setTgName(groupTemplate.getGroup());
 			 		em.persist(temCompany);
+			 		//newRecord++; 
+			 		isNew=true;
 		    	}
 		    	 query =em.createQuery("select temCompany from TemCompany temCompany where temCompany.tcName=:tcName " +
 			 				"and temCompany.tgName=:tgName");
@@ -271,10 +305,27 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 			 		query.setParameter("tgName", groupTemplate.getGroup());
 			 		 obj=query.getResultList(); 
 			 		 if(obj.size()>0){
-			 			TemMsIsdn TemMsIsdn =new TemMsIsdn();
+			 			/*TemMsIsdn TemMsIsdn =new TemMsIsdn();
 			 			TemMsIsdn.setMsIsdn(groupTemplate.getNo());
-			 			TemMsIsdn.setTemCompany((TemCompany)obj.get(0));
-			 			em.merge(TemMsIsdn);
+			 			//TemMsIsdn.setTemProvider(temProvider))Isdn(groupTemplate.getNo());
+			 			TemMsIsdn.setTemCompany((TemCompany)obj.get(0));*/
+			 			//em.createQuery("update ");
+			 			 Query q1 = em.createQuery(
+			 			        "update TemMsIsdn e set e.temCompany.tcId= " +((TemCompany)obj.get(0)).getTcId()+
+			 			        		" WHERE e.msIsdn='"+groupTemplate.getNo()+"' "); 
+			 			    int updated = q1.executeUpdate();
+			 			    if(updated==0){
+			 			    	TemMsIsdn TemMsIsdn =new TemMsIsdn();
+					 			TemMsIsdn.setMsIsdn(groupTemplate.getNo());
+					 			//TemMsIsdn.setTemProvider(temProvider))Isdn(groupTemplate.getNo());
+					 			TemMsIsdn.setTemCompany((TemCompany)obj.get(0));
+					 			em.merge(TemMsIsdn);
+					 			//isNew=true;
+			 			    	/* q1 = em.createQuery(
+						 			        "update TemMsIsdn e set e.temCompany.tcId= " +((TemCompany)obj.get(0)).getTcId()+
+						 			        		" WHERE e.msIsdn='"+groupTemplate.getNo()+"' "); 
+						 			    int updated = q1.executeUpdate();*/
+			 			    }
 			 		 }
 			 		if ((i % 500) == 0) {
 			 			 tx.commit();
@@ -282,6 +333,11 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				          tx.begin();
 				      }
 			 		i++;
+			 		if(isNew)
+			 			newRecord++;
+			 		else 
+			 			updateRecord++;
+			 			
 			}
 		 	
 		 /*	for (TemGroup temGroup : temGroups) {
@@ -306,7 +362,9 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				tx.commit();
 			    em.close();
 		} 
-		return i;
+	 results[0]=newRecord;
+	 results[1]=updateRecord;
+		return results;
 	}
 
 
@@ -389,7 +447,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle){		
+	public List<ReportTemplate> listReportTemplates(Integer tcId,Date billCycle,Integer provider){		
 		// TODO Auto-generated method stub
 		List<ReportTemplate>  reportTemplates= null;
 		StringBuffer sb=new StringBuffer();
@@ -409,7 +467,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				"  tcdr.tcdr_bill_cycle " +
 				"		from TEM_CALL_DETAIL_RECORD tcdr left join" +
 				"	(select isdn.msisdn, company.tc_id, company.tc_name," +
-				"     company.tc_group_name,provider.tp_name " +
+				"     company.tc_group_name,provider.tp_id,provider.tp_name " +
 				"     from TEM_MSISDN isdn left join TEM_COMPANY company " +
 				"     on isdn.tc_id=company.tc_id left join TEM_PROVIDER provider " +
 				"     on isdn.tp_id=provider.tp_id) t1 on " +
@@ -426,6 +484,9 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 		    }*/
 		    if(tcId!=null && tcId.intValue()!=0){
 		    	sb.append("   and t1.tc_id=:tcId");
+		    }
+		    if(provider!=null && provider.intValue()!=0 && provider.intValue()!=-1){
+		    	sb.append("   and t1.tp_id=:tpId");
 		    }
 		    if(billCycle!=null){
 		    
@@ -449,6 +510,9 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 			    }*/
 			    if(tcId!=null && tcId.intValue()!=0){
 			    	query.setParameter("tcId", tcId.intValue());  
+			    }
+			    if(provider!=null && provider.intValue()!=0 && provider.intValue()!=-1){
+			    	query.setParameter("tpId", provider.intValue());   
 			    }
 			    if(billCycle!=null){ 
 			    /*	String billCycleStr=format.format(billCycle);
@@ -571,5 +635,47 @@ EntityManager em = entityManager.createEntityManager();
 	    em.close();
 	}
 	    return billCycles;
+	}
+
+
+	@Override
+	public List<String[]> listProvider(Integer tcId, Date billCycle) {
+		// TODO Auto-generated method stub
+		List<String[]>  providers= null;
+		StringBuffer sb=new StringBuffer();
+		
+		sb.append("select  t1.tp_id,  t1.tp_name " +
+				//"  DATE_FORMAT(tcdr.tcdr_bill_cycle,'%d_%m_%Y'),  DATE_FORMAT(tcdr.tcdr_bill_cycle,'%d/%m/%Y'), tcdr.tcdr_bill_cycle " +
+				" from TEM_CALL_DETAIL_RECORD tcdr left join (select isdn.msisdn, company.tc_id, company.tc_name," +
+				"   company.tc_group_name,provider.tp_id,provider.tp_name  from TEM_MSISDN isdn left join TEM_COMPANY company" +
+				"  on isdn.tc_id=company.tc_id left join TEM_PROVIDER provider  on isdn.tp_id=provider.tp_id) t1 on" +
+				" tcdr.tcdrmsisdnfrom=t1.msisdn  where tcdr.ttid=1 and" +
+				" 	tcdr.tcdr_source=0	and  t1.tc_id="+tcId+" group by   t1.tp_name"); 
+		List list=null;
+		/*DateFormat dFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("th","TH"));
+		Calendar calendar = new GregorianCalendar(new Locale("th","TH"));*/
+	 
+EntityManager em = entityManager.createEntityManager();  
+	    try {
+	    	Query query =em.createNativeQuery(sb.toString());
+	    	 
+	    	list=query.getResultList(); 
+	    	int size=list.size();
+	    	providers=new ArrayList<String[]>(size); 
+	    	for (int i = 0; i < size; i++) {
+	    		java.lang.Object[] listObj=(java.lang.Object[])list.get(i);
+	    		String[] results=new String[2];
+	    		results[0]=listObj[0]!=null?(((Integer)listObj[0])+""):"";
+	    		results[1]=listObj[1]!=null?(String)listObj[1]:""; 
+	    		providers.add(results);
+			}
+	    }
+	catch (RuntimeException e) {
+	   e.printStackTrace();
+	}
+	finally {
+	    em.close();
+	}
+	    return providers;
 	} 
 }

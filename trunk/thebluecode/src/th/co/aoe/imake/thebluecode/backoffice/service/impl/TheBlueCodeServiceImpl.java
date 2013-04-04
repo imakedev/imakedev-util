@@ -182,7 +182,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				}
 
 				TemCallDetailRecord temCallDetailRecord = new TemCallDetailRecord();
-				temCallDetailRecord.setTcdrMsIsdnTo(cdrTemplate.getMsIsdnTo());
+				
 				temCallDetailRecord.setTcdrUsedCount(cdrTemplate.getUsedCount());
 				TemCallDetailRecordPk temCallDetailRecordPk = new TemCallDetailRecordPk();
 				temCallDetailRecordPk
@@ -198,6 +198,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				/*temCallDetailRecordPk.setTcdrUsedTime(new Timestamp(cdrTemplate
 						.getUsedTime().getTime()));*/
 				temCallDetailRecordPk.setTtId(1);
+				temCallDetailRecordPk.setTcdrMsIsdnTo(cdrTemplate.getMsIsdnTo());
 				temCallDetailRecord.setTemCallDetailRecordPk(temCallDetailRecordPk);
 				temCallDetailRecord.setTcdrSource(0);
 				temCallDetailRecord.setTcdrValue(cdrTemplate.getPrice());
@@ -209,15 +210,19 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				
 				Query query =em.createQuery("select count(temCallDetailRecord) from TemCallDetailRecord temCallDetailRecord" +
 						" where temCallDetailRecord.temCallDetailRecordPk.tcdrMsIsdnFrom=:tcdrMsIsdnFrom" +
+						" and temCallDetailRecord.temCallDetailRecordPk.tcdrMsIsdnTo=:tcdrMsIsdnTo" +
 						" and   temCallDetailRecord.temCallDetailRecordPk.tcdrUsedTime=:tcdrUsedTime" +
 						" and   temCallDetailRecord.temCallDetailRecordPk.ttId=:ttId");
 					 
 		 		query.setParameter("tcdrMsIsdnFrom", cdrTemplate.getMsIsdnFrom());
+		 		query.setParameter("tcdrMsIsdnTo", cdrTemplate.getMsIsdnTo());
 		 		query.setParameter("tcdrUsedTime", timestamp); 
 		 		query.setParameter("ttId", temCallDetailRecordPk.getTtId()); 
 		    	Long count=(Long)query.getSingleResult(); 
-		    	if(count.intValue()>0)
+		    	if(count.intValue()>0){
 		    		updateRecord++;
+		    		//System.out.println(timestamp);
+		    	}
 		    	else
 		    		newRecord++;
 		    	

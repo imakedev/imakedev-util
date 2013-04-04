@@ -76,10 +76,13 @@ public class UploadController {
 			"dd_MM_yyyy");
 	public static DateFormat dateFormatTrue_ext = new SimpleDateFormat(
 			"HH:mm:ss");
-	public static Pattern date_pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{2} \\d{6} \\w.*");
+	//public static Pattern date_pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{2} \\d{6} \\w.*");
+	public static Pattern date_pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{2} \\d{6} \\s*?\\w.*");
+	
 	public static Pattern time_pattern = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2}");
 	
-	public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\w.*");
+	//public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\w.*");
+	public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\s*?\\w.*");
 	public static NumberFormat format = NumberFormat.getNumberInstance();
 	static{
 		format.setGroupingUsed(false);
@@ -826,7 +829,7 @@ public class UploadController {
 
 						// check data
 						if (columnIndex == 4) {
-							Matcher matcher = date_pattern.matcher(cell
+							Matcher matcher = date_pattern.matcher(cell 
 									.getRichStringCellValue().getString());
 							boolean isMatches = matcher.matches();
 							if (!isMatches){

@@ -15,8 +15,7 @@ public class TemCallDetailRecord implements Serializable {
 	@Id
 	private TemCallDetailRecordPk temCallDetailRecordPk;
 //	@ManyToOne
-	@Column(name = "TCDR_MSISDN_TO")
-	private String tcdrMsIsdnTo;
+	
 	@Column(name = "TCDR_USED_COUNT")
 	private Double tcdrUsedCount;
 	@Column(name = "TCDR_SOURCE")
@@ -41,13 +40,13 @@ public class TemCallDetailRecord implements Serializable {
 		this.temCallDetailRecordPk = temCallDetailRecordPk;
 	}
 
-	public String getTcdrMsIsdnTo() {
+	/*public String getTcdrMsIsdnTo() {
 		return tcdrMsIsdnTo;
 	}
 
 	public void setTcdrMsIsdnTo(String tcdrMsIsdnTo) {
 		this.tcdrMsIsdnTo = tcdrMsIsdnTo;
-	}
+	}*/
 
 	public Double getTcdrUsedCount() {
 		return tcdrUsedCount;

@@ -3,6 +3,7 @@ package th.co.aoe.imake.thebluecode.backoffice.domain;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -11,6 +12,8 @@ public class TemCallDetailRecordPk implements Serializable {
 	private String tcdrMsIsdnFrom;
 	private Timestamp tcdrUsedTime;
 	private Integer ttId;
+	@Column(name = "TCDR_MSISDN_TO")
+	private String tcdrMsIsdnTo;
 
 	public String getTcdrMsIsdnFrom() {
 		return tcdrMsIsdnFrom;
@@ -34,6 +37,14 @@ public class TemCallDetailRecordPk implements Serializable {
 
 	public void setTtId(Integer ttId) {
 		this.ttId = ttId;
+	}
+
+	public String getTcdrMsIsdnTo() {
+		return tcdrMsIsdnTo;
+	}
+
+	public void setTcdrMsIsdnTo(String tcdrMsIsdnTo) {
+		this.tcdrMsIsdnTo = tcdrMsIsdnTo;
 	}
 
 }

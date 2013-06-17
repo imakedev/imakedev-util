@@ -53,6 +53,8 @@ public class ExportController {
 	 //private static SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	 private static SimpleDateFormat format_billCycle = new SimpleDateFormat("dd_MM_yyyy");
 	 private static DateFormat dFormat = new SimpleDateFormat("hh,mm,ss", new Locale("en","EN"));
+	 private static DateFormat dFormat2 = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", new Locale("en","EN"));
+	// MM/DD/YYYY HH:MM:SS
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
 	 public void export(HttpServletRequest request, HttpServletResponse response)
 	    {
@@ -336,7 +338,7 @@ public class ExportController {
 
 			 
 			//String header[] = {"กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวน นาที","จำนวนเงิน"};
-		    String header[] = {"รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)","กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวน นาที","จำนวนเงิน"};
+		    String header[] = {"รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)","กลุ่ม ต้นทาง","บริษัท ต้นทาง","เครือข่าย ต้นทาง","หมายเลข ต้นทาง","กลุ่ม ปลายทาง","บริษัท ปลายทาง","เครือข่าย ปลายทาง","หมายเลข ปลายทาง","วันเดือนปี","เวลา","เรียกไป/เรียกจาก","ครั้ง/นาที","จำนวน วินาที","จำนวน นาที","จำนวนเงิน","เวลา 24h"};
 			
 			int indexRow = 0;
 			Row row = sheet.createRow(indexRow);
@@ -360,6 +362,9 @@ public class ExportController {
 			//cellStyleTime.setDataFormat(dateFormat.getFormat("HH:mm:ss a"));
 //			cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm AM/PM"));
 			cellStyleTime.setDataFormat(dateFormat.getFormat("h:mm:ss AM/PM"));
+			
+			CellStyle cellStyleDate2 = wb.createCellStyle();
+			cellStyleDate2.setDataFormat(dateFormat.getFormat("dd/MM/yyyy h:mm:ss"));
 			
 			/*CellStyle cellStyleTimeUsed = wb.createCellStyle();
 			
@@ -465,6 +470,13 @@ public class ExportController {
 				
 				Cell cell14 = row.createCell(15);
 				cell14.setCellValue(template.getPrice());
+				
+				//add
+				Cell cell15 = row.createCell(16);
+				//cell15.setCellFormula("TIME("+dFormat2.format(calendar.getTime())+")"); d
+				cell15.setCellValue(calendar);
+				cell15.setCellStyle(cellStyleDate2);
+				
 			}
 			
 			   response.setHeader("Content-Type", "application/octet-stream; charset=UTF-8");

@@ -624,26 +624,35 @@ public class UploadController {
 		Sheet sheet1 = myWorkBook.getSheetAt(0);
 		String provider=sheet1.getSheetName();
 		if(provider.equalsIgnoreCase("TRUE")){
-			int[] types = { 1,0,1, 0, 1, 6, 0 }; 
+			//int[] types = { 1,0,1, 0, 1, 6, 0 }; d
+			int[] types = { 1,0,1, 0, 1, 1,6, 0 }; 
+		//	int[] types = { 1,0,1 , 0, 1,1, 0,0 };
 			CellReference cellRef = null;
 			int columnIndex = 0;
 			int rowNum = 0;
-			int end_col=7;
+			int end_col=8;
 			Cell cell=null; 
 			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
 					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
-			for (Row row : sheet1) {
+	loop1:
+				for (Row row : sheet1) {
 				//for (Cell cell : row) {
 				for (int j=0;j<end_col;j++) {
 					cell=row.getCell(j);
+					if(cell==null)
+						break;
 					columnIndex = cell.getColumnIndex();
 					rowNum = row.getRowNum();
 					if (rowNum > 0) {
 						cellRef = new CellReference(rowNum, columnIndex);
+						if(j==0 && cell.getStringCellValue()!=null && cell.getStringCellValue().trim().length()==0)
+							break loop1;
 						// check type
 						if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
 
-						} else if (types[columnIndex] == cell.getCellType()) { // ok
+						}else if (columnIndex ==5 && cell.getCellType()==3 ) { // ok
+
+						}else if (types[columnIndex] == cell.getCellType()) { // ok
 
 						} else { // not ok
 							String[] values=new String[2];
@@ -655,7 +664,7 @@ public class UploadController {
 						// check data
 						if (columnIndex == 4) {
 							Matcher matcher = date_pattern.matcher(cell
-									.getRichStringCellValue().getString());
+									.getRichStringCellValue().getString().trim());
 							boolean isMatches = matcher.matches();
 							if (!isMatches){
 								String[] values=new String[2];
@@ -691,19 +700,27 @@ public class UploadController {
 			System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
 			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
 					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
-			for (Row row : sheet1) {
+	loop1:
+				for (Row row : sheet1) {
 				//for (Cell cell : row) {
 				for (int j=0;j<end_col;j++) {
 					cell =row.getCell(j);
+					if(cell==null)
+						break;
+					//System.out.println("row-->"+row.getRowNum()+",j-->"+j+",cell-->"+cell);
 					columnIndex = cell.getColumnIndex(); 
 					rowNum = row.getRowNum();
 					if (rowNum > 0) {
 						cellRef = new CellReference(rowNum, columnIndex);
+						if(j==0 && cell.getStringCellValue()!=null && cell.getStringCellValue().trim().length()==0)
+							break loop1;
 						// check type
 						if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
 
-						}else  
-						if (types[columnIndex] == cell.getCellType()) { // ok
+						}
+						else if (columnIndex ==5 && cell.getCellType()==3) { // ok
+
+						}else if (types[columnIndex] == cell.getCellType()) { // ok
 
 						} else { // not ok
 							String[] values=new String[2];
@@ -715,7 +732,7 @@ public class UploadController {
 						// check data
 						if (columnIndex == 4) {
 							Matcher matcher = patternTOT.matcher(cell
-									.getRichStringCellValue().getString());
+									.getRichStringCellValue().getString().trim());
 							boolean isMatches = matcher.matches();
 							if (!isMatches){
 								String[] values=new String[2];
@@ -903,12 +920,15 @@ public class UploadController {
 			//int columnIndex = 0;
 			int rowNum = 0;
 			Cell cell=null;
+		loop1:
 			for (Row row : sheet1) {
 				//for (Cell cell : row) {
 					//columnIndex = cell.getColumnIndex();
 					rowNum = row.getRowNum();
 					if (rowNum > 0) {
 						cell=row.getCell(0);
+						if(  cell.getStringCellValue()!=null && cell.getStringCellValue().trim().length()==0)
+							break loop1;
 						CDRTemplate cdrTemplate = new CDRTemplate();
 						//String str=format1_en.format(cell.getDateCellValue());
 						//System.out.println(" Str == "+str);
@@ -940,9 +960,6 @@ public class UploadController {
 						  //System.out.println(cell.getRichStringCellValue().getString()+" , type="+Cell.CELL_TYPE_STRING);
 			              String[] address=cell.getRichStringCellValue().getString().split(" ");
 			              if(address.length>2){
-			              	//System.out.println("Date used "+address[0]); // check format date
-			              	// 21/11/55151337 Ubonratchathani invalide
-			              	//System.out.println("Time used "+address[1]);
 			            	Date usedDate=null;
 							try {
 								usedDate = dateFormatTrue.parse(address[0]+" "+address[1]);
@@ -959,21 +976,17 @@ public class UploadController {
 			              	}
 			              	cdrTemplate.setMsIsdnToLocation(toStr);
 			              }
-			              	//System.out.println("To "+toStr.trim());
-			              	
-						cell=row.getCell(5); // 00:04:00 
+			              cell=row.getCell(5);  //type
+				            cdrTemplate.setTcdrType(cell.getStringCellValue());
+						cell=row.getCell(6); // 00:04:00 
 		                  //D457 - Sun Dec 31 00:04:00 ICT 1899 , type= date 0
 		              	String usedCount=dateFormatTrue_ext.format(cell.getDateCellValue());
 		              	Double used = 0.0; 
 							String[] useSplit = usedCount.toString().trim().split(":");
-							// 
 							used = ((Double.parseDouble(useSplit[0])*360)+(Double.parseDouble(useSplit[1])*60)+(Double.parseDouble(useSplit[2])));
-							//used = ((Double.parseDouble(useSplit[0])*60)+(Double.parseDouble(useSplit[1]))+(Double.parseDouble(useSplit[2])/100));
-						 
 						cdrTemplate.setUsedCount(used);
-		              	//System.out.println(aoeStr);
 		              	
-						cell=row.getCell(6); 
+						cell=row.getCell(7); 
 						cdrTemplate.setUsedType("call");
 						cdrTemplate.setPrice(cell.getNumericCellValue());
 					//	cdrTemplate.setMsIsdnFromProvider("TRUE");
@@ -1077,13 +1090,16 @@ public class UploadController {
 			//	CellReference cellRef = null;
 				//int columnIndex = 0;
 				int rowNum = 0;
-				Cell cell=null;
+				Cell cell=null; 
+		loop1:
 				for (Row row : sheet1) {
 					//for (Cell cell : row) {
 						//columnIndex = cell.getColumnIndex();
 						rowNum = row.getRowNum();
 						if (rowNum > 0) {
 							cell=row.getCell(0);
+							if( cell.getStringCellValue()!=null && cell.getStringCellValue().trim().length()==0)
+								break loop1;
 							CDRTemplate cdrTemplate = new CDRTemplate();
 							
 							cdrTemplate.setMsIsdnFromProvider(cell.getStringCellValue());
@@ -1143,6 +1159,8 @@ public class UploadController {
 				              }
 				              	//System.out.println("To "+toStr.trim());
 				              	
+				            cell=row.getCell(5);  //type
+				            cdrTemplate.setTcdrType(cell.getStringCellValue());
 							cell=row.getCell(6); // 00:04:00 
 			                  //D457 - Sun Dec 31 00:04:00 ICT 1899 , type= date 0
 			              	//String usedCount=dateFormatTrue_ext.format(cell.getDateCellValue());
@@ -1192,6 +1210,8 @@ public class UploadController {
 						//for (Cell cell : row) {
 						for (int j=0;j<end_col;j++) {
 							cell=row.getCell(j);
+							if(cell==null)
+								break;
 							columnIndex = cell.getColumnIndex();
 							rowNum = row.getRowNum();
 							if (rowNum > 0) {

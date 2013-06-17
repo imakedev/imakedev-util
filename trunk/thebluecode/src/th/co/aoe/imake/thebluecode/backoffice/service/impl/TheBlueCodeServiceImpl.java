@@ -207,6 +207,7 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 			//	temCallDetailRecord.setTcdrBillCycle(new Timestamp(billCycleDate.getTime()));
 				temCallDetailRecord.setTcdrBillCycle(new Timestamp(cdrTemplate.getBillCycle().getTime()));
 			//	System.out.println("temCallDetailRecord ="+temCallDetailRecord);
+				temCallDetailRecord.setTcdrType(cdrTemplate.getTcdrType());
 				
 				Query query =em.createQuery("select count(temCallDetailRecord) from TemCallDetailRecord temCallDetailRecord" +
 						" where temCallDetailRecord.temCallDetailRecordPk.tcdrMsIsdnFrom=:tcdrMsIsdnFrom" +

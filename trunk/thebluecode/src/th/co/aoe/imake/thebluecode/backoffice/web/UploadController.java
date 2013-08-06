@@ -482,52 +482,6 @@ public class UploadController {
 						 resultAll.add(result);
 						 resultAll.add(records);
 					}
-					/*if(provider_id.equalsIgnoreCase("True")){ 
-						result=readTrueTemplate(multipart.getInputStream(), isXLSX);
-						//System.out.println(" size      ="+result.size());
-						if(result!=null && result.size()==2){
-							if(((String)result.get(0)).equals("1")){
-								List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
-								//System.out.println(theBlueCodeService);
-								try{
-								int records=theBlueCodeService.importCDR(xxx,billCycleDate);
-								//System.out.println(records);
-								}catch(Exception ex){
-									ex.printStackTrace();
-								} 
-							}
-						}
-						
-					}else if(provider_id.equalsIgnoreCase("TOT")){ 
-						result=readTOTTemplate(multipart.getInputStream(), isXLSX);
-						//System.out.println(" size      ="+result.size());
-						 
-						if(result!=null && result.size()==2){
-							if(((String)result.get(0)).equals("1")){
-								List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
-								//System.out.println(theBlueCodeService);
-								try{
-								int records=theBlueCodeService.importCDR(xxx,billCycleDate);
-								//System.out.println(records);
-								}catch(Exception ex){
-									ex.printStackTrace();
-								} 
-							}
-						}
-					}else{
-						result=new ArrayList(2);
-						result.add("2");
-						result.add("3");
-					}*/
-
-				/*	hotLink = current + "" + genToken();
-					ndPathFileGen = hotLink + "." + extension;
-					pathFolder = pathFolder + "/" + ndPathFileGen;*/
-					// FileInputStream fin= new FileInputStream(file)
-					/*
-					 * fos = new FileOutputStream(path+"/"+ndPathFileGen);
-					 * fos.write(filesize);
-					 */
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -538,72 +492,7 @@ public class UploadController {
 				 * TODO Auto-generated catch block e.printStackTrace(); }
 				 */
 			}
-			/*
-			 * if(module.equals("mcLogo")){ MissAccount missAccount = new
-			 * MissAccount(); missAccount.setMaId(Long.parseLong(id));
-			 * missAccount.setMaCustomizeLogoFileName(s);
-			 * missAccount.setMaCustomizeLogoHotlink(hotLink);
-			 * missAccount.setMaCustomizeLogoPath(pathFolder);
-			 * missExamService.updateMissAccountLogo(missAccount); }else
-			 * if(module.equals("companyLogo")){ MissAccount missAccount = new
-			 * MissAccount(); missAccount.setMaId(Long.parseLong(id));
-			 * missAccount.setMaCustomizeLogoFileName(s);
-			 * missAccount.setMaCustomizeLogoHotlink(hotLink);
-			 * missAccount.setMaCustomizeLogoPath(pathFolder);
-			 * missExamService.updateMissAccountLogo(missAccount); }else
-			 * if(module.equals("candidateImg")){ MissCandidate missCandidate =
-			 * new MissCandidate(); missCandidate.setMcaId(Long.parseLong(id));
-			 * missCandidate.setMcaPictureFileName(s);
-			 * missCandidate.setMcaPictureHotlink(hotLink);
-			 * missCandidate.setMcaPicturePath(pathFolder);
-			 * missExamService.updateMissCandidatePhoto(missCandidate); }else
-			 * if(module.equals("contactImg")){
-			 * 
-			 * MissContact missContact = new MissContact();
-			 * missContact.setMcontactId(Long.parseLong(id));
-			 * missContact.setMcontactPictureFileName(s);
-			 * missContact.setMcontactPictureHotlink(hotLink);
-			 * missContact.setMcontactPicturePath(pathFolder);
-			 * missExamService.updateMissContactPhoto(missContact); }else
-			 * if(module.equals("attachManual")){ MissManual missManual = new
-			 * MissManual(); MissSery missSery=new MissSery();
-			 * missSery.setMsId(Long.parseLong(id));
-			 * missManual.setMissSery(missSery);
-			 * missManual.setMmId(Long.parseLong(id));
-			 * missManual.setMmFileName(s); missManual.setMmHotlink(hotLink);
-			 * missManual.setMmPath(pathFolder);
-			 * missExamService.updateMissManual(missManual); }else
-			 * if(module.equals("questionImg")){ MissAttach missAttach = new
-			 * MissAttach(); //missAttach.setMatId((Long.parseLong(id));
-			 * missAttach.setMatFileName(s); missAttach.setMatHotlink(hotLink);
-			 * missAttach.setMatPath(pathFolder);
-			 * missAttach.setMatRef(Long.parseLong(id));
-			 * missAttach.setMatModule(module);
-			 * missExamService.updateMissAttach(missAttach); }else
-			 * if(module.equals("template")){ MissSeriesAttach missSeriesAttach
-			 * = new MissSeriesAttach();
-			 * missSeriesAttach.setMsatRef1(Long.parseLong(id));
-			 * missSeriesAttach.setMsatModule(module);
-			 * missSeriesAttach.setMsatHotlink(hotLink);
-			 * missSeriesAttach.setMsatPath(pathFolder);
-			 * missSeriesAttach.setMsatFileName(s);
-			 * missExamService.updateMissSeriesAttach(missSeriesAttach); }else
-			 * if(module.equals("evaluation")){ //String[] ids=id.split("_");
-			 * MissSeriesAttach missSeriesAttach = new MissSeriesAttach();
-			 * missSeriesAttach.setMsatRef1(Long.parseLong(id));
-			 * missSeriesAttach.setMsatModule(module);
-			 * missSeriesAttach.setMsatHotlink(hotLink);
-			 * missSeriesAttach.setMsatPath(pathFolder);
-			 * missSeriesAttach.setMsatFileName(s);
-			 * missSeriesAttach.setRootPath(bundle.getString(module+"Path"));
-			 * missExamService.updateMissSeriesAttach(missSeriesAttach); }
-			 */
 		}
-		// return missCandidate;
-
-	/*	missFile.setHotlink(hotLink);
-		missFile.setFilename(s);
-		missFile.setFilepath(pathFolder);*/
 		Gson gson = new Gson();
 		/*gson.toJson(missFile);*/
 		// return hotLink;

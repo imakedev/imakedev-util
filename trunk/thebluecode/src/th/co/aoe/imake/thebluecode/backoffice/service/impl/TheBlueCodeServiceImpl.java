@@ -260,6 +260,8 @@ public class TheBlueCodeServiceImpl implements TheBlueCodeService {
 				tx.commit();
 			    em.close();
 		} 
+	// System.out.println("newRecord->"+newRecord);
+	// System.out.println("updateRecord->"+updateRecord);
 	 results[0]=newRecord;
 	 results[1]=updateRecord;
 		return results;

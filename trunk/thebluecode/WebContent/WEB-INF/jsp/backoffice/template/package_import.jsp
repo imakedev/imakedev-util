@@ -39,7 +39,7 @@ $(document).ready(function() {
 					 $("#message_element > strong").html("Upload success !!! ");  
 					 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
 				    $("#message_element").slideDown("slow"); 
-					 setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
+					 // setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
 			 
 				} 
 			 /* 	var path_file='getFileAttached("getfile/template/${seriesForm.missSery.msId}/'+obj.hotlink+'")'; */

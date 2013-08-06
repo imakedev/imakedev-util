@@ -81,7 +81,7 @@ $(document).ready(function() {
 						// $("#message_element > strong").html("Import success "+obj[1].length+" "+((obj[1].length>1)?"records":"record")+" !!! ");  
 						 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
 					    $("#message_element").slideDown("slow"); 
-					    setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
+					   // setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
 					}else{
 						 $('#message_info').slideUp("show");
 						 setErrorTemplat();

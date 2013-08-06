@@ -50,10 +50,8 @@ public class ExportController {
 	 @Autowired
 	 private TheBlueCodeService theBlueCodeService;
 	 private static final Logger logger = LoggerFactory.getLogger(ServiceConstant.LOG_APPENDER);
-	 //private static SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	 private static SimpleDateFormat format_billCycle = new SimpleDateFormat("dd_MM_yyyy");
 	 private static DateFormat dFormat = new SimpleDateFormat("hh,mm,ss", new Locale("en","EN"));
-	 private static DateFormat dFormat2 = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", new Locale("en","EN"));
 	// MM/DD/YYYY HH:MM:SS
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}) 
 	 public void export(HttpServletRequest request, HttpServletResponse response)
@@ -61,14 +59,7 @@ public class ExportController {
 	    	
 	    	String id=request.getParameter("id");
 	    	logger.info("id =="+id);
-	    	/*String msId=request.getParameter("mcaSeries");
-	    	//System.out.println("request id ="+mtrIds);
-	    	MissTestResult missTestResult =new MissTestResult();
-	    	missTestResult.setMtrIds(mtrIds);
-	    	missTestResult.setMsId(Long.parseLong(msId));
-	    	 
-	    	   VResultMessage vresultMessage = missExamService.searchMissTestResult(missTestResult);*/
-	    	 
+	    
 	        HSSFWorkbook wb = new HSSFWorkbook();
 	        HSSFSheet sheet = wb.createSheet("Result");
 	     

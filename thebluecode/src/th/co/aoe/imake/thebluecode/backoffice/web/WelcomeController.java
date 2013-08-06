@@ -6,7 +6,6 @@
 package th.co.aoe.imake.thebluecode.backoffice.web;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,12 +25,6 @@ import th.co.aoe.imake.thebluecode.backoffice.service.PSTService;
 @SessionAttributes(value={"UserMissContact"})
 public class WelcomeController
 {
-	private static int PAGE_SIZE=20;
-	private static ResourceBundle bundle;
-	static{
-			bundle =  ResourceBundle.getBundle( "config" );		
-		
-	}
     @RequestMapping(value={"/"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
     public String getNewForm(HttpServletRequest request,HttpServletResponse response,  Model model)
     {
@@ -47,11 +40,6 @@ public class WelcomeController
     	}
         return "backoffice/common";
     }
-   
-  /*private static SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
-    private static SimpleDateFormat format2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    //private static Logger logger = Logger.getRootLogger();
-    private static final Logger logger = LoggerFactory.getLogger(ServiceConstant.LOG_APPENDER);*/
     @Autowired
     private PSTService missExamService;
 

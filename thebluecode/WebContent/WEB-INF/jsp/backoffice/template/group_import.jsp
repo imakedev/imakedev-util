@@ -57,7 +57,7 @@ $(document).ready(function() {
 						 $("#message_element > strong").html(obj[1].length+" is successfully imported  with "+obj_number[0]+" new "+((obj_number[0]>1)?"records":"record")+" ,  "+obj_number[1]+" updated "+((obj_number[1]>1)?"records":"record")+"");
 						 $('fieldset').animate({ 'padding-top': 0 }, 'slow'); 
 					    $("#message_element").slideDown("slow"); 
-					    setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
+					   // setTimeout(function(){$("#message_element").slideUp("slow"); $('fieldset').animate({ 'padding-top': '36px' }, 'slow'); },5000);
 					}else{
 						 $('#message_info').slideUp("show");
 						 setErrorTemplat();

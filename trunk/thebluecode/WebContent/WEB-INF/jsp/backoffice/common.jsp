@@ -18,7 +18,7 @@
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
-<title>PST BackOffice</title>
+<title>TheblueCode BackOffice</title>
  <meta charset="UTF-8" />
         <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
 <c:url var="url" value="/" />
@@ -211,11 +211,11 @@ function openMailDialog(todo_id,todo_ref){
      	<div class="span11 offset1">
      	<span style="float:left;"> 
             <table border="0" width="100%">
-            <tr><td width="30%" >
-            <img src="<c:url value='/resources/images/logo.png'/>" />  
+            <tr><td width="20%" >
+            <img src="<c:url value='/resources/images/logo.png'/>" style="width: 300px;" />  
             </td> 
-            <td width="50%" align="left">
-             <div class="navbar" style="float:left;position: relative;top: 8px;width: 500px">
+            <td width="70%" align="left">
+             <div class="navbar" style="float:left;position: relative;top: 8px;width: 525px">
               <div class="navbar-inner">
                 <div class="container">
                  <!--  <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -230,6 +230,7 @@ function openMailDialog(todo_id,todo_ref){
                       <li id="cdr_link"><a onclick="togle_page('cdr/init','cdr_link')">Import CDR</a></li>
                       <li id="package_link"><a onclick="togle_page('package/init','package_link')">Import Package</a></li>  
                       <li  id="report_link"><a onclick="togle_page('report/init','report_link')">Report</a></li>
+                      <!-- <li  id="mobile_report_link"><a onclick="togle_page('mobile_report/init','mobile_report_link')">Mobile Report</a></li> -->
                       <!-- <li id="breakdown_link"><a onclick="togle_page('breakdown/init','breakdown_link')">Break down</a></li>
                       <li id="costs_link"><a onclick="togle_page('costs/init','costs_link')">Costs</a></li>
                       <li id="roadpump_link"><a onclick="togle_page('roadpump/init','roadpump_link')">Road pump</a></li>
@@ -270,7 +271,7 @@ function openMailDialog(todo_id,todo_ref){
             </div>
             </td>
              <td width="10%" align="right"><span style="padding: 10px">
-                      <div align="right" style="position: absolute;right:0;top:75; padding-right:10px;">
+                      <div align="right" style="position: absolute;right:0;top:10; padding-right:10px;">
             			<a href="${logoutUrl}">Logout</a> 
            			 </div> 
              </span> 

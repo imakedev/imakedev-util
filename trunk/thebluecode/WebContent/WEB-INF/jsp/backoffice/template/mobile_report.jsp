@@ -77,7 +77,7 @@ function getProvider(){
 					// alert(data.length)
 						
 					if(data.length>0){
-						//str=str+"<option value=\"0\">All</option>";
+						str=str+"<option value=\"0\">All</option>";
 						for(var i=0;i<data.length;i++){
 							str=str+"<option value=\""+data[i][0]+"\">"+data[i][1]+"</option>";
 							//alert(data[i][1]);;
@@ -162,12 +162,7 @@ function exportXLS(){
 	//21/01/2013 
 	//@RequestMapping(value={"/all/{billCycle}/{tcId}"}
 	//var src= _path+"/export/all/"+billCycle[0]+"_"+billCycle[1]+"_"+billCycle[2]+"/"+$("#tcId").val();
-	var path_export="all";
-	//alert($("#provider").text());
-	//alert($("#provider").val());
-	if($("#provider").text()=='TRUEMOVE')
-		path_export="mobile_all";
-	var src= _path+"export/"+path_export+"/"+$("#billCycle").val()+"/"+$("#tcId").val()+"/"+$("#provider").val();
+	var src= _path+"/export/all/"+$("#billCycle").val()+"/"+$("#tcId").val()+"/"+$("#provider").val();
 	//alert(src)
 	 
 	var div = document.createElement("div");

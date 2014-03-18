@@ -15,6 +15,43 @@ public class ReportTemplate implements Serializable {
 	private String providerTo;
 	private String msIsdnTo;
 	
+	private String callInGroup;
+	private String callExtGroup;
+	private String callCloseGroup;
+	private String callSpecailGroup; 
+	private String callSpecailGroupExt; 
+	private String callAll;
+	private String sms;
+	private String mms;
+	private String gprsMB;
+	private String gprsMIN;
+	private String amt;
+	private String[] columns;
+	
+	public String getCallSpecailGroupExt() {
+		return callSpecailGroupExt;
+	}
+
+	public void setCallSpecailGroupExt(String callSpecailGroupExt) {
+		this.callSpecailGroupExt = callSpecailGroupExt;
+	}
+
+	public String getMms() {
+		return mms;
+	}
+
+	public void setMms(String mms) {
+		this.mms = mms;
+	}
+
+	public String getAmt() {
+		return amt;
+	}
+
+	public void setAmt(String amt) {
+		this.amt = amt;
+	}
+
 	public String getProviderTo() {
 		return providerTo;
 	}
@@ -134,4 +171,76 @@ public class ReportTemplate implements Serializable {
 		this.billCycle = billCycle;
 	}
 
+	public String getCallInGroup() {
+		return callInGroup;
+	}
+
+	public void setCallInGroup(String callInGroup) {
+		this.callInGroup = callInGroup;
+	}
+
+	public String getCallExtGroup() {
+		return callExtGroup;
+	}
+
+	public void setCallExtGroup(String callExtGroup) {
+		this.callExtGroup = callExtGroup;
+	}
+
+	public String getCallAll() {
+		return callAll;
+	}
+
+	public void setCallAll(String callAll) {
+		this.callAll = callAll;
+	}
+
+	public String getSms() {
+		return sms;
+	}
+
+	public void setSms(String sms) {
+		this.sms = sms;
+	}
+
+	public String getGprsMB() {
+		return gprsMB;
+	}
+
+	public void setGprsMB(String gprsMB) {
+		this.gprsMB = gprsMB;
+	}
+
+	public String getGprsMIN() {
+		return gprsMIN;
+	}
+
+	public void setGprsMIN(String gprsMIN) {
+		this.gprsMIN = gprsMIN;
+	}
+
+	public String getCallCloseGroup() {
+		return callCloseGroup;
+	}
+
+	public void setCallCloseGroup(String callCloseGroup) {
+		this.callCloseGroup = callCloseGroup;
+	}
+
+	public String getCallSpecailGroup() {
+		return callSpecailGroup;
+	}
+
+	public void setCallSpecailGroup(String callSpecailGroup) {
+		this.callSpecailGroup = callSpecailGroup;
+	}
+
+	public String[] getColumns() {
+		return columns;
+	}
+
+	public void setColumns(String[] columns) {
+		this.columns = columns;
+	} 
+	
 }

@@ -30,6 +30,30 @@ public class TemCallDetailRecord implements Serializable {
 	
 	@Column(name = "TCDR_TYPE")
 	private String tcdrType;
+	
+	@Column(name = "GPRS_PRD_QNT")
+	private Double gprsPrdQnt;
+	
+	@Column(name = "TCDR_CODE")
+	private String featureCode;
+	
+	@Column(name = "TCDR_DATA_TYPE")
+	private String tcdrDataType;
+	
+	@Column(name = "TCDR_AMT")
+	private Double tcdrAmt;
+	
+	public String getTcdrDataType() {
+		return tcdrDataType;
+	}
+
+	public void setTcdrDataType(String tcdrDataType) {
+		this.tcdrDataType = tcdrDataType;
+	}
+
+	@Column(name = "TCDR_DURATION_TIME")
+	private String durationTime;
+	
 //	@ManyToOne
 //	@Column(name = "TT_ID")
 //	private TemType temType;
@@ -98,6 +122,39 @@ public class TemCallDetailRecord implements Serializable {
 	public void setTcdrType(String tcdrType) {
 		this.tcdrType = tcdrType;
 	}
+
+	public Double getGprsPrdQnt() {
+		return gprsPrdQnt;
+	}
+
+	public void setGprsPrdQnt(Double gprsPrdQnt) {
+		this.gprsPrdQnt = gprsPrdQnt;
+	}
+
+	public String getDurationTime() {
+		return durationTime;
+	}
+
+	public void setDurationTime(String durationTime) {
+		this.durationTime = durationTime;
+	}
+
+	public String getFeatureCode() {
+		return featureCode;
+	}
+
+	public void setFeatureCode(String featureCode) {
+		this.featureCode = featureCode;
+	}
+
+	public Double getTcdrAmt() {
+		return tcdrAmt;
+	}
+
+	public void setTcdrAmt(Double tcdrAmt) {
+		this.tcdrAmt = tcdrAmt;
+	}
+	
 
 //	public TemType getTemType() {
 //		return temType;

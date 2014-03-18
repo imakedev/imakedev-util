@@ -56,7 +56,9 @@ public class ReportController {
 				) {
 		Date billCycleDate= null;
     	try {
-    		billCycleDate=format_billCycle.parse(reportForm.getBillCycle());
+    		//System.out.println("reportForm.getBillCycle()->"+reportForm.getBillCycle());
+    		if(!reportForm.getBillCycle().equals("-1"))
+    			billCycleDate=format_billCycle.parse(reportForm.getBillCycle());
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

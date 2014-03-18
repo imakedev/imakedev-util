@@ -12,6 +12,7 @@ import java.util.Locale;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import th.co.aoe.imake.thebluecode.backoffice.dto.MobileTemplate;
 import th.co.aoe.imake.thebluecode.backoffice.service.TheBlueCodeService;
 import th.co.imake.tem.migratedata.form.CDRTemplate;
 
@@ -24,8 +25,21 @@ public class Main {
 
 		//((Component) springContext.getBean("top")).start();
 		TheBlueCodeService temService = (TheBlueCodeService)springContext.getBean("theBlueCodeService");
-		List list=temService.listReportTemplates(3, new Date(),1);
-		System.out.println(list);
+		// http://119.59.100.40/thebluecode/export/mobile_all/02_12_2013/30/4
+		String billCycle="02_11_2013";
+		Integer provider=4;
+		Integer tcId=30;
+		  SimpleDateFormat format_billCycle = new SimpleDateFormat("dd_MM_yyyy");
+		Date billCycleDate= null;
+    	try {
+    		billCycleDate=format_billCycle.parse(billCycle);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		MobileTemplate mobileTemplate=temService.listMobileReportTemplates(tcId, billCycleDate, provider);
+				//listReportTemplates(3, new Date(),1);
+		System.out.println(mobileTemplate);
 		// *and t1.tc_group_name='กลุ่ม C' and  t1.tc_id=3  and tcdr.tcdrMsIsdnFrom='057777777'
 		 //  and t1.tp_name='AIS'*/
 		/*List list=temService.listReportTemplates("กลุ่ม C", 3, "057777777");

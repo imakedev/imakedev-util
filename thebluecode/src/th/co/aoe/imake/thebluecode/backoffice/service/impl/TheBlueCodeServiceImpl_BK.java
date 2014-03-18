@@ -16,6 +16,7 @@ import th.co.aoe.imake.thebluecode.backoffice.domain.TemCallDetailRecord;
 import th.co.aoe.imake.thebluecode.backoffice.domain.TemCompany;
 import th.co.aoe.imake.thebluecode.backoffice.domain.TemGroup;
 import th.co.aoe.imake.thebluecode.backoffice.domain.TemMsIsdn;
+import th.co.aoe.imake.thebluecode.backoffice.dto.MobileTemplate;
 import th.co.aoe.imake.thebluecode.backoffice.dto.ReportTemplate;
 import th.co.aoe.imake.thebluecode.backoffice.service.TheBlueCodeService;
 import th.co.imake.tem.migratedata.form.CDRTemplate;
@@ -149,6 +150,12 @@ public class TheBlueCodeServiceImpl_BK implements TheBlueCodeService {
 	}
 	@Override
 	public List<String[]> listProvider(Integer tcId, Date billCycle) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public MobileTemplate listMobileReportTemplates(Integer tcId,
+			Date billCycle, Integer provider) {
 		// TODO Auto-generated method stub
 		return null;
 	}

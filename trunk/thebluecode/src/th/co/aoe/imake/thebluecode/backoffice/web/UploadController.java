@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -69,7 +70,11 @@ public class UploadController {
 	//public static DateFormat dateFormatTrue = new SimpleDateFormat("dd/MM/yy hhmmss", new Locale("th", "TH"));
 	
 	public static DateFormat dateFormatTrue = new SimpleDateFormat("dd/MM/yy HHmmss", new Locale("th", "TH"));
-	public static DateFormat dateFormatTOT = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", new Locale("th", "TH")); 
+	public static DateFormat dateFormatTOT = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy", new Locale("th", "TH"));
+	public static DateFormat dateFormatT_T = new SimpleDateFormat("HHmmss dd/MM/yy", new Locale("th", "TH")); 
+	public static DateFormat dateFormatTrueMove = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("en", "EN")); 
+	public static DateFormat dateFormatTrueMove_new = new SimpleDateFormat("dd/MM/yyyy", new Locale("en", "EN")); 
+	public static DateFormat timeFormatTrueMove = new SimpleDateFormat("HH:mm:ss", new Locale("en", "EN")); 
 		private static SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy", new Locale("th", "TH"));
 		private static SimpleDateFormat format1_en = new SimpleDateFormat("dd/MM/yyyy", new Locale("en", "EN"));
 	private static SimpleDateFormat format_billCycle = new SimpleDateFormat(
@@ -82,7 +87,10 @@ public class UploadController {
 	public static Pattern time_pattern = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2}");
 	
 	//public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\w.*");
-	public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\s*?\\w.*");
+	/*public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\s*?\\w.*");
+	public static Pattern patternT_T = Pattern.compile("\\d{6} \\d{2}/\\d{2}/\\d{2} \\w.*");*/
+	public static Pattern patternTOT = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2} \\d{2}/\\d{2}/\\d{4} \\s*?.*");
+	public static Pattern patternT_T = Pattern.compile("\\d{6} \\d{2}/\\d{2}/\\d{2} .*");
 	public static NumberFormat format = NumberFormat.getNumberInstance();
 	static{
 		format.setGroupingUsed(false);
@@ -467,21 +475,52 @@ public class UploadController {
 							try{
 								records=theBlueCodeService.importCDR(xxx);
 							 
-							//System.out.println(records);
+							 //System.out.println("records->"+records);
 							}catch(Exception ex){
 								ex.printStackTrace();
-							}
-							/*System.out.println(" xxx size      ="+xxx.size());
-							System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
-							for (int i = 0; i < xxx.size(); i++) {  
-								CDRTemplate cdrTemplate = (CDRTemplate)xxx.get(i);
-								System.out.println(cdrTemplate.getBillCycle()+" "+cdrTemplate.getMsIsdnFrom()+" to "+cdrTemplate.getMsIsdnTo()
-										+"  date "+cdrTemplate.getUsedDate()+" time "+cdrTemplate.getUsedTime()+" price "+cdrTemplate.getPrice()+" usedCount "+cdrTemplate.getUsedCount());
-							} */
+							} 
 						}
 						 resultAll.add(result);
 						 resultAll.add(records);
 					}
+				 //
+				/*	String files;
+					  //File folder = new File("/Users/imake/Desktop/CDR_DEC");
+					File folder = new File("/aoe/CDR_DEC");
+					  File[] listOfFiles = folder.listFiles(); 
+					 
+					  for (int i = 0; i < listOfFiles.length; i++) 
+					  {
+					 
+					   if (listOfFiles[i].isFile()) 
+					   {
+					   files = listOfFiles[i].getName();
+					   result=reademplate(new FileInputStream(listOfFiles[i]), isXLSX);
+						System.out.println("import file->"+files);
+						if(result!=null && result.size()==2){
+							if(((String)result.get(0)).equals("1")){
+								List<CDRTemplate> xxx =(List<CDRTemplate>)result.get(1);
+								//System.out.println(theBlueCodeService);
+								try{
+									records=theBlueCodeService.importCDR(xxx);
+								 
+								 //System.out.println("records->"+records);
+								}catch(Exception ex){
+									ex.printStackTrace();
+								} 
+							}
+							
+						}
+						try {
+							//Thread.currentThread().sleep(3000);
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					      }
+					  }*/
+					// end 
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -576,7 +615,7 @@ public class UploadController {
 		}else
 			list=null;
 	    }
-		else if(provider.equalsIgnoreCase("TOT")){
+		else if(provider.equalsIgnoreCase("TOT") || provider.equalsIgnoreCase("TT&T")){
 			//int[] types = { 0, 0, 1, 1, 0,0 };
 			int[] types = { 1,0,1 , 0, 1,1, 0,0 }; 
 			 //System.out.println("Cell.CELL_TYPE_NUMERIC"+Cell.CELL_TYPE_NUMERIC);// 0 and date(assume 6)
@@ -619,9 +658,14 @@ public class UploadController {
 						}
 
 						// check data
-						if (columnIndex == 4) {
-							Matcher matcher = patternTOT.matcher(cell
-									.getRichStringCellValue().getString().trim());
+						if (columnIndex == 4) { 
+							Matcher matcher = null;
+							if(provider.equals("TOT")){
+								matcher=patternTOT.matcher(cell
+										.getRichStringCellValue().getString());
+							}else
+								matcher=patternT_T.matcher(cell
+										.getRichStringCellValue().getString()); 
 							boolean isMatches = matcher.matches();
 							if (!isMatches){
 								String[] values=new String[2];
@@ -644,7 +688,10 @@ public class UploadController {
 			}
 		}else
 			list=null;
-	}	
+		}else  if(provider.equalsIgnoreCase("TRUEMOVE")){
+			list.add("1");
+			list.add(getTRUEMOVEValue(sheet1));
+		}
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -659,122 +706,7 @@ public class UploadController {
 		} 
 		return list;
 	}
-	private List readTrueTemplate(InputStream in, boolean isXLSX) {
-		//System.out.println("into readTrueTemplate");
-		List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
-		List data = new ArrayList();
-
-		// Sameple
-		/*
-		 * // HSSFWorkbook, File NPOIFSFileSytem fs = new NPOIFSFileSystem(new
-		 * File("file.xls")); HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot());
-		 * .... fs.close();
-		 * 
-		 * // HSSFWorkbook, InputStream, needs more memory NPOIFSFileSytem fs =
-		 * new NPOIFSFileSystem(myInputStream); HSSFWorkbook wb = new
-		 * HSSFWorkbook(fs.getRoot());
-		 * 
-		 * // XSSFWorkbook, File OPCPackage pkg = OPCPackage.open(new
-		 * File("file.xlsx")); XSSFWorkbook wb = new XSSFWorkbook(pkg); ....
-		 * pkg.close();
-		 * 
-		 * // XSSFWorkbook, InputStream, needs more memory OPCPackage pkg =
-		 * OPCPackage.open(myInputStream); XSSFWorkbook wb = new
-		 * XSSFWorkbook(pkg); .... pkg.close();
-		 */
-		try {
-			// FileInputStream myInput = new FileInputStream(fileName);
-
-			Workbook myWorkBook = null;
-			if (isXLSX) {
-				myWorkBook = new XSSFWorkbook(in);
-			} else {
-				POIFSFileSystem myFileSystem = new POIFSFileSystem(in); 
-				myWorkBook = new HSSFWorkbook(myFileSystem);
-			}
-			
-			// System.out.println(myWorkBook);
-
-			Sheet sheet1 = myWorkBook.getSheetAt(0);
-			// String [] columns={"A","B","C","D","E"};
-			//int[] types = { 0, 0, 1, 6, 0 };
-			int[] types = { 1,0,1, 0, 1, 6, 0 };
-
-			CellReference cellRef = null;
-			int columnIndex = 0;
-			int rowNum = 0;
-			int end_col=7;
-			Cell cell=null;
-			/*System.out.println("sheet1.getRow(0).getLastCellNum()="+sheet1.getRow(0).getLastCellNum());
-			System.out.println("sheet1.getRow(0).getLastCellNum() value="+sheet1.getRow(0).getCell(sheet1.getRow(0).getLastCellNum()-1).getStringCellValue());
-			CellReference cellRef_last = new CellReference(0, sheet1.getRow(0).getLastCellNum()-1);
-			System.out.println("cellRef_last.formatAsString()=>"+cellRef_last.formatAsString());*/
-			/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
-			System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
-			if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
-					&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
-			for (Row row : sheet1) {
-				//for (Cell cell : row) {
-				for (int j=0;j<end_col;j++) {
-					cell=row.getCell(j);
-					columnIndex = cell.getColumnIndex();
-					rowNum = row.getRowNum();
-					if (rowNum > 0) {
-						cellRef = new CellReference(rowNum, columnIndex);
-						// check type
-						if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
-
-						} else if (types[columnIndex] == cell.getCellType()) { // ok
-
-						} else { // not ok
-							String[] values=new String[2];
-							values[0]=cellRef.formatAsString();
-							values[1]="Invalid Type of Cell";
-							data.add(values);
-						}
-
-						// check data
-						if (columnIndex == 4) {
-							Matcher matcher = date_pattern.matcher(cell 
-									.getRichStringCellValue().getString());
-							boolean isMatches = matcher.matches();
-							if (!isMatches){
-								String[] values=new String[2];
-							values[0]=cellRef.formatAsString();
-							values[1]="Invalid format , sample is [10:12:45 08/08/2555 Bangkok]";
-							data.add(values);
-							}
-
-						}
-					}
-				}
-			}
-			if(data.size()>0){ //not success
-				list.add("0");
-				list.add(data);
-			}else{ //success
-				list.add("1");
-				list.add(getTrueValue(sheet1));
-			}
-		}else
-			list=null;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			  if (in != null)
-				try {
-					in.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		}
-		/*System.out.println(" in invalid " + inValid.size());
-		for (int i = 0; i < inValid.size(); i++) {
-			System.out.println(inValid.get(i).toString());
-		}*/
-		return list;
-	}
+	
 	 private List getGroupValue( Sheet sheet1){ 
 		 List list=new ArrayList(); 
 			int rowNum = 0;
@@ -877,6 +809,8 @@ public class UploadController {
 		              	
 						cell=row.getCell(7); 
 						cdrTemplate.setUsedType("call");
+						cdrTemplate.setTtid("1");
+						cdrTemplate.setTcdrDirection("1");
 						cdrTemplate.setPrice(cell.getNumericCellValue());
 					//	cdrTemplate.setMsIsdnFromProvider("TRUE");
 						list.add(cdrTemplate);
@@ -885,94 +819,11 @@ public class UploadController {
 		return list; 
 	  }
 
-		private List readTOTTemplate(InputStream in, boolean isXLSX) {
-			
-			List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
-			List data = new ArrayList();
-			int end_col=8;
-			try { 
-				Workbook myWorkBook = null;
-				if (isXLSX) {
-					myWorkBook = new XSSFWorkbook(in);
-				} else {
-					POIFSFileSystem myFileSystem = new POIFSFileSystem(in); 
-					myWorkBook = new HSSFWorkbook(myFileSystem);
-				} 
-				Sheet sheet1 = myWorkBook.getSheetAt(0);
-				// String [] columns={"A","B","C","D","E"};
-				//int[] types = { 0, 0, 1, 1, 0,0 };
-				int[] types = { 1,0,1 , 0, 1,1, 0,0 };
-				 //System.out.println("Cell.CELL_TYPE_NUMERIC"+Cell.CELL_TYPE_NUMERIC);// 0 and date(assume 6)
 
-				CellReference cellRef = null;
-				int columnIndex = 0;
-				int rowNum = 0;
-				Cell cell=null; 
-				/*System.out.println(sheet1.getRow(0).getCell(end_col-1));
-				System.out.println(sheet1.getRow(0).getCell(end_col).getStringCellValue().length());*/
-				if(sheet1.getRow(0).getCell(end_col-1)!=null && sheet1.getRow(0).getCell(end_col-1).getStringCellValue().length()>0
-						&& ( sheet1.getRow(0).getCell(end_col)==null ||  ( sheet1.getRow(0).getCell(end_col)!=null && sheet1.getRow(0).getCell(end_col).getStringCellValue().length()==0))  ){
-				for (Row row : sheet1) {
-					//for (Cell cell : row) {
-					for (int j=0;j<end_col;j++) {
-						cell =row.getCell(j);
-						columnIndex = cell.getColumnIndex(); 
-						rowNum = row.getRowNum();
-						if (rowNum > 0) {
-							cellRef = new CellReference(rowNum, columnIndex);
-							// check type
-							if (types[columnIndex] == 6 && cell.getCellType() == 0) { // ok
-
-							}else  
-							if (types[columnIndex] == cell.getCellType()) { // ok
-
-							} else { // not ok
-								data.add(cellRef.formatAsString());
-							}
-
-							// check data
-							if (columnIndex == 4) {
-								Matcher matcher = patternTOT.matcher(cell
-										.getRichStringCellValue().getString());
-								boolean isMatches = matcher.matches();
-								if (!isMatches)
-									data.add(cellRef.formatAsString());
-
-							}
-						}
-					}
-				}
-				if(data.size()>0){ //not success
-					list.add("0");
-					list.add(data);
-				}else{ //success
-					list.add("1");
-					list.add(getTOTValue(sheet1));
-				}
-			}else
-				list=null;
-				
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (in != null)
-					try {
-						in.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			}
-			/*System.out.println(" in invalid " + inValid.size());
-			for (int i = 0; i < inValid.size(); i++) {
-				System.out.println(inValid.get(i).toString());
-			}*/
-			return list;
-		}
 		 private List getTOTValue( Sheet sheet1){
 			// Sheet sheet1 = myWorkBook.getSheetAt(0);
 				// String [] columns={"A","B","C","D","E"};
+			 String provider=sheet1.getSheetName();
 			 List list=new ArrayList();
 				//int[] types = { 0, 0, 1, 1, 0,0 };
 
@@ -1031,8 +882,11 @@ public class UploadController {
 				              	// 21/11/55151337 Ubonratchathani invalide
 				              	//System.out.println("Time used "+address[1]);
 				            	Date usedDate=null;
-								try {
-									usedDate = dateFormatTOT.parse(address[0]+" "+address[1]);
+								try { 
+									if(provider.equals("TOT"))
+										usedDate = dateFormatTOT.parse(address[0]+" "+address[1]);
+									else
+										usedDate = dateFormatT_T.parse(address[0]+" "+address[1]);
 								} catch (ParseException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1059,6 +913,8 @@ public class UploadController {
 			              	
 							cell=row.getCell(7); 
 							cdrTemplate.setUsedType("call");
+							cdrTemplate.setTtid("1");
+							cdrTemplate.setTcdrDirection("1");
 							cdrTemplate.setPrice(cell.getNumericCellValue());
 							//cdrTemplate.setMsIsdnFromProvider("TOT");
 							list.add(cdrTemplate);
@@ -1066,6 +922,270 @@ public class UploadController {
 				}
 			return list; 
 		  }
+		  private List getTRUEMOVEValue( Sheet sheet1){
+				// Sheet sheet1 = myWorkBook.getSheetAt(0);
+					// String [] columns={"A","B","C","D","E"};
+				 List list=new ArrayList();
+					//int[] types = { 0, 0, 1, 1, 0,0 };
+
+				//	CellReference cellRef = null;
+					//int columnIndex = 0;
+				 String provider=sheet1.getSheetName();
+					int rowNum = 0;
+					Cell cell=null;
+					for (Row row : sheet1) {
+						//for (Cell cell : row) {
+							//columnIndex = cell.getColumnIndex();
+							rowNum = row.getRowNum();
+							if (rowNum > 0) { 
+								cell=row.getCell(11);//DIRECTION
+								//System.out.println("TYPE_->"+cell.getStringCellValue());
+								String direction=null;
+								if(cell!=null)
+									direction=cell.getStringCellValue();
+								cell=row.getCell(6);//TYPE_
+								//System.out.println("TYPE_->"+cell.getStringCellValue());
+								String type=null;
+								if(cell!=null)
+									type=cell.getStringCellValue();
+							if(direction!=null && type!=null)
+							 if(!direction.equals("INCOMING") || (type.equals("Voice") && direction.equals("INCOMING") ) || (type.equals("Data") 
+									 && direction.equals("INCOMING") )  || (type.equals("Sms") && direction.equals("INCOMING") )  ) { 
+								//System.out.println("TYPE_->"+cell.getStringCellValue());
+								 
+								CDRTemplate cdrTemplate = new CDRTemplate();
+								cdrTemplate.setMsIsdnFromProvider(provider);
+								cell=row.getCell(0); //รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)
+								try {
+									if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+									if (DateUtil.isCellDateFormatted(cell)) {
+										 cdrTemplate.setBillCycle(cell.getDateCellValue());
+					                    } else {
+					                    	cdrTemplate.setBillCycle(format1_en.parse(cell.getStringCellValue()));
+					                    }
+									}else{
+										cdrTemplate.setBillCycle(format1_en.parse(cell.getStringCellValue()));
+									}
+									 
+								} catch (ParseException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								
+								cell=row.getCell(1); //SUBSCRIBER_NO
+								//System.out.println("รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)->"+"0"+format.format(cell.getNumericCellValue()));
+								cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
+							  //  System.out.println("รอบค่าใช้บริการประจำเดือน (วว:ดด:ปปปป)->"+cell.getStringCellValue());
+								//cdrTemplate.setMsIsdnFromProvider(cell.getStringCellValue());
+
+								cell=row.getCell(2); //DATE_ 
+								 //System.out.println("DATE_->"+cell.getStringCellValue());
+								//cdrTemplate.setMsIsdnFrom("0"+format.format(cell.getNumericCellValue()));
+								String date_str="";
+								if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+								 if (DateUtil.isCellDateFormatted(cell)) {
+				                        //System.out.println("dd->"+cell.getDateCellValue());
+				                    	//cdrTemplate.setUsedDate(cell.getDateCellValue());
+				                    	date_str=dateFormatTrueMove_new.format(cell.getDateCellValue());
+				                    	//System.out.println(date_str);
+				                    } else {
+				                    	date_str=cell.getStringCellValue();
+				                    }
+								}else
+									date_str=cell.getStringCellValue();
+								//String date_str=cell.getStringCellValue();d
+							
+								cell=row.getCell(3); //TIME_
+								String time_str="";
+								if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+								 if (DateUtil.isCellDateFormatted(cell)) {
+				                      //  System.out.println("dd2->"+cell.getDateCellValue());
+				                    	//cdrTemplate.setUsedDate(cell.getDateCellValue());
+				                    	time_str=timeFormatTrueMove.format(cell.getDateCellValue());
+				                    	//System.out.println(time_str);
+				                    } else {
+				                    	time_str=cell.getStringCellValue();
+				                    }
+								}else
+									time_str=cell.getStringCellValue();
+								 //System.out.println("TIME_->"+cell.getStringCellValue());
+								// String time_str=cell.getStringCellValue();
+								 
+								 Date usedDate=null;
+							try {
+								usedDate = dateFormatTrueMove.parse(date_str+" "+time_str);
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							cdrTemplate.setUsedDate(usedDate);
+							Time usedTime = new Time(usedDate.getTime());
+							cdrTemplate.setUsedTime(usedTime);
+							
+								//cdrTemplate.setMsIsdnTo("0"+format.format(cell.getNumericCellValue()));
+								cell=row.getCell(4); //CALLING_NO 
+								String cllingNo="";
+								if(cell.getCellType()==Cell.CELL_TYPE_STRING){
+									//System.out.println("DESTINATION_NO->"+cell.getStringCellValue());
+									cllingNo=cell.getStringCellValue();
+								}else {// CELL_TYPE_NUMERIC
+									//System.out.println("DESTINATION_NO->"+"0"+format.format(cell.getNumericCellValue()));
+									cllingNo= format.format(cell.getNumericCellValue());
+								}
+								cllingNo=cllingNo.toUpperCase();
+								//System.out.println("CALLING_NO->"+"0"+format.format(cell.getNumericCellValue())); 
+								//cdrTemplate.setMsIsdnTo("0"+format.format(cell.getNumericCellValue()));
+							
+								cell=row.getCell(5);//DESTINATION_NO
+								String msisdnTo="";
+								if(cell.getCellType()==Cell.CELL_TYPE_STRING){
+									//System.out.println("DESTINATION_NO->"+cell.getStringCellValue());
+									msisdnTo=cell.getStringCellValue();
+								}else {// CELL_TYPE_NUMERIC
+									//System.out.println("DESTINATION_NO->"+"0"+format.format(cell.getNumericCellValue()));
+									msisdnTo="0"+format.format(cell.getNumericCellValue());
+								}
+								 msisdnTo=msisdnTo.toUpperCase();
+								 if(type.equals("Data")) 
+									 cdrTemplate.setMsIsdnTo(cllingNo);
+								 else
+									 cdrTemplate.setMsIsdnTo(msisdnTo);
+								
+							  
+								
+								
+								String type_int="0";
+								if(type.equals("GPRS")){
+									//type_int="3";
+									type_int="10";
+									if(direction.equals("GPRS uplink")){
+										type_int="4";
+									}else if(direction.equals("GPRS downlink")){
+										type_int="5";
+									}
+								}else if(type.equals("Data"))
+									type_int="3";
+								else if(type.equals("Voice"))
+									type_int="1";
+								else if(type.equals("Sms"))
+									type_int="2";
+								else if(type.equals("MMS"))
+									type_int="6";
+								else if(type.equals("Other"))
+								{
+									//OUTGOING	ROAM-MOC
+									//GPRS downlink	ROAM-MOC
+									//GPRS uplink	ROAM-MOC
+
+									type_int="7"; //OUTGOING
+									if(direction.equals("GPRS uplink")){
+										type_int="8";
+									}else if(direction.equals("GPRS downlink")){
+										type_int="9";
+									}
+								}
+								
+								cdrTemplate.setTtid(type_int);
+								cdrTemplate.setTcdrDirection(direction);
+								cdrTemplate.setUsedType(type);
+								cdrTemplate.setTcdrDataType(type);
+								cell=row.getCell(7);//DURATION_SEC
+								//System.out.println("DURATION_SEC->"+cell.getStringCellValue());
+								
+								String durationTime="";
+								if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+									 if (DateUtil.isCellDateFormatted(cell)) {
+					                        durationTime=timeFormatTrueMove.format(cell.getDateCellValue());
+					                    } else {
+					                    	durationTime="0:00:00";
+					                    }
+								}else {// CELL_TYPE_STRING
+									durationTime=cell.getStringCellValue();
+								}
+								cdrTemplate.setDurationTime(durationTime);
+								
+								cell=row.getCell(14);//FEATURE_CODE
+								String FEATURE_CODE=cell.getStringCellValue()!=null?cell.getStringCellValue():"";
+								cdrTemplate.setFeatureCode(FEATURE_CODE);
+								
+								cell=row.getCell(8);//DURATION_MINUTE
+								Double used =null;
+								if(cell!=null){
+									 used = (cell.getNumericCellValue());  
+									
+								}else
+									used=new Double(0);
+								/* if(type.equals("Sms") || FEATURE_CODE.startsWith("R1")){
+									// used= (cell.getNumericCellValue());  
+								 }else
+									 used= (used*60);*/
+								 cdrTemplate.setUsedCount(used);
+									 
+								
+								
+								//gprsPrdQnt
+								cell=row.getCell(10);//GPRS_PRD_QNT
+								cdrTemplate.setGprsPrdQnt(cell.getNumericCellValue());
+								
+								
+								cell=row.getCell(9);//AMT
+								Double amt =null;
+								if(cell!=null){
+									 amt = (cell.getNumericCellValue());  
+									
+								}else
+									amt=new Double(0);
+								cdrTemplate.setTcdrAmt(amt);
+								//System.out.println("DURATION_MINUTE->"+used);
+								
+																
+	/*
+								  //System.out.println(cell.getRichStringCellValue().getString()+" , type="+Cell.CELL_TYPE_STRING);
+					              String[] address=cell.getRichStringCellValue().getString().split(" ");
+					              if(address.length>2){
+					              	//System.out.println("Date used "+address[0]); // check format date
+					              	// 21/11/55151337 Ubonratchathani invalide
+					              	//System.out.println("Time used "+address[1]);
+					            	Date usedDate=null;
+									try { 
+										if(provider.equals("TOT"))
+											usedDate = dateFormatTOT.parse(address[0]+" "+address[1]);
+										else
+											usedDate = dateFormatT_T.parse(address[0]+" "+address[1]);
+									} catch (ParseException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									cdrTemplate.setUsedDate(usedDate);
+									Time usedTime = new Time(usedDate.getTime());
+									cdrTemplate.setUsedTime(usedTime);
+					              	String toStr="";
+					              	for(int i=2;i<address.length;i++){
+					              		toStr=toStr+address[i]+" ";
+					              	}
+					              	cdrTemplate.setMsIsdnToLocation(toStr);
+					            	System.out.println("To "+toStr.trim());
+					              }
+					              
+					              	
+								cell=row.getCell(6); // 00:04:00 
+				                  //D457 - Sun Dec 31 00:04:00 ICT 1899 , type= date 0
+				              	//String usedCount=dateFormatTrue_ext.format(cell.getDateCellValue());
+				              	Double used = (cell.getNumericCellValue()*60);  
+								cdrTemplate.setUsedCount(used);
+				              	//System.out.println(aoeStr);
+				              	
+								cell=row.getCell(7); 
+								cdrTemplate.setUsedType("call");
+								cdrTemplate.setPrice(cell.getNumericCellValue());
+								//cdrTemplate.setMsIsdnFromProvider("TOT");
+								list.add(cdrTemplate);*/
+								list.add(cdrTemplate);
+							 }
+					       }
+					}
+				return list; 
+			  }
 		 private List readGroupTemplate(InputStream in, boolean isXLSX) {
 				
 				List list = new ArrayList(2);  // 0 =type [0==not success , 1==success] , 1 =data [invalid,result message ]
@@ -1215,8 +1335,8 @@ public class UploadController {
 								if(result!=null && result.size()==2){
 									if(((String)result.get(0)).equals("1")){
 										List<GroupTemplate> xxx =(List<GroupTemplate>)result.get(1);
-										/*System.out.println(" xxx size      ="+xxx.size());
-										System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
+										//System.out.println(" xxx size      ="+xxx.size());
+										/*System.out.println(" CDRTemplate     ="+xxx.get(0).getClass());
 										for (int i = 0; i < xxx.size(); i++) {  
 											GroupTemplate groupTemplate = (GroupTemplate)xxx.get(i);
 											System.out.println(" "+groupTemplate.getGroup()+" , "+groupTemplate.getCompany()

@@ -14,6 +14,10 @@ public class TemCallDetailRecordPk implements Serializable {
 	private Integer ttId;
 	@Column(name = "TCDR_MSISDN_TO")
 	private String tcdrMsIsdnTo;
+	
+	@Column(name = "TCDR_DIRECTION")
+	private String tcdrDirection;
+	
 
 	public String getTcdrMsIsdnFrom() {
 		return tcdrMsIsdnFrom;
@@ -45,6 +49,14 @@ public class TemCallDetailRecordPk implements Serializable {
 
 	public void setTcdrMsIsdnTo(String tcdrMsIsdnTo) {
 		this.tcdrMsIsdnTo = tcdrMsIsdnTo;
+	}
+
+	public String getTcdrDirection() {
+		return tcdrDirection;
+	}
+
+	public void setTcdrDirection(String tcdrDirection) {
+		this.tcdrDirection = tcdrDirection;
 	}
 
 }

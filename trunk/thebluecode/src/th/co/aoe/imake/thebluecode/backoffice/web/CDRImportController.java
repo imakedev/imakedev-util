@@ -25,7 +25,7 @@ public class CDRImportController {
 	 @RequestMapping(value={"/init"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
 	 public String init(Model model)
 	    {
-		 theBlueCodeService.getTemCallDetailRecord();
+		// theBlueCodeService.getTemCallDetailRecord();
 		 CDRImportForm cdrImportForm = null;
 		 cdrImportForm = new CDRImportForm();
 	    
